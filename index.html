@@ -31,9 +31,8 @@
             pointer-events: none;
         }
 
-        /* NEW: Wrapper for the main content to apply a positional transform */
         .main-content-wrapper {
-            transform: translate(5vw, 8vh); /* Moves content 5% of viewport width right and 8% of viewport height down */
+            transform: translate(0, 0); /* Resetting to let flexbox handle centering perfectly */
         }
 
         .starseed {
@@ -148,6 +147,51 @@
             transition: transform 0.2s ease, background-color 0.2s ease;
         }
         .cta-button:hover { transform: scale(1.05); }
+
+        /* --- NEW: Superhero Page Styles --- */
+        .superhero-hero {
+            position: relative;
+            background: #0a021c;
+            border-radius: 1.5rem;
+            padding: 5rem 2rem;
+            margin-top: -4rem; /* Pull it up a bit */
+            overflow: hidden;
+            border: 1px solid rgba(153, 102, 255, 0.3);
+        }
+        .superhero-hero::before, .superhero-hero::after {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: rotate-breathe 25s linear infinite;
+        }
+        .superhero-hero::before {
+            background: radial-gradient(circle, #9966FF, transparent 60%);
+            top: -400px;
+            left: -400px;
+        }
+        .superhero-hero::after {
+            background: radial-gradient(circle, #36A2EB, transparent 60%);
+            bottom: -400px;
+            right: -400px;
+            animation-direction: reverse;
+            animation-duration: 20s;
+        }
+        @keyframes rotate-breathe {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .superhero-hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        .how-it-works-grid {
+             display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+             gap: 2rem; margin-top: 3rem; text-align: left;
+        }
         
         @media (max-width: 768px) {
             .starseed { width: 60px; height: 60px; }
@@ -155,6 +199,7 @@
             .page-content h1 { font-size: 2rem; }
             .page-content > p { font-size: 1rem; }
             .page-section { padding: 5rem 1rem 1rem 1rem; }
+            .superhero-hero { padding: 4rem 1.5rem; }
         }
     </style>
 </head>
@@ -163,12 +208,10 @@
         <div id="particles"></div>
         <div id="branches-container" class="branches-container"></div>
         <div id="leaves-container" class="leaves-container"></div>
-        <!-- UPDATED: Added main-content-wrapper class for positioning -->
         <div class="main-content-wrapper relative z-30 flex flex-col items-center justify-center">
             <div id="starseed" class="starseed mb-8"></div>
             <h1 class="text-4xl font-light mb-2 tracking-wider">THE STARRTER</h1>
             <p class="tagline text-xl mb-12">Rooted in Light</p>
-            <!-- Homepage Contact Button -->
             <a href="#" class="cta-button mt-4" style="--glow-color: #e8b10e;" data-contact-subject="General Inquiry from TheStarrTer.com" data-contact-body="Hello, I'd like to make a general inquiry.">
                 <i class="fas fa-envelope mr-2"></i>Contact Me
             </a>
@@ -187,7 +230,7 @@
                     <div class="card-content">
                         <h3>Custom Theme Songs</h3>
                         <p>A bespoke service for content creators, brands, or individuals seeking a unique theme song. Prices are negotiated based on project scope.</p>
-                        <a href="#" class="cta-button" data-contact-subject="Inquiry: Custom Theme Song" data-contact-body="Hi, I'm interested in getting a quote for a custom theme song. Please let me know your process and availability."><i class="fas fa-envelope mr-2"></i>Contact for Quote</a>
+                        <a href="#" class="cta-button" data-contact-subject="Inquiry: Custom Theme Song" data-contact-body="Hi, I'm interested in getting a quote for a custom theme song."><i class="fas fa-envelope mr-2"></i>Contact for Quote</a>
                     </div>
                 </div>
                 <div class="project-card">
@@ -208,6 +251,15 @@
             <h1>AI Work</h1>
             <p>Thoughtful automation, augmentation, and insight. Explore custom agents, productivity flows, and educational tools designed to harmonize technology and humanity.</p>
             <div class="project-grid">
+                <!-- NEW CARD FOR SUPERHERO SERVICE -->
+                <div class="project-card">
+                    <img src="https://placehold.co/600x400/0f0524/FF6384?text=Become+A+Hero" alt="Superhero Portrait placeholder">
+                    <div class="card-content">
+                        <h3>Custom Superhero Portraits</h3>
+                        <p>Get a custom cartoon superhero image of yourself or a loved one, generated with AI and refined by hand. The ultimate personalized profile picture.</p>
+                        <a href="#" class="cta-button" data-page-link="page-superhero"><i class="fas fa-mask mr-2"></i>Learn More</a>
+                    </div>
+                </div>
                 <div class="project-card">
                     <img src="https://placehold.co/600x400/0f0524/FF6384?text=Custom+GPT+Service" alt="Custom GPT Service placeholder">
                     <div class="card-content">
@@ -264,6 +316,44 @@
        </div>
     </div>
 
+    <!-- NEW SUPERHERO PAGE -->
+    <div id="page-superhero" class="page-section" style="--glow-color: rgba(255, 99, 132, 0.6);">
+        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+        <div class="page-content">
+            <div class="superhero-hero">
+                <div class="superhero-hero-content">
+                    <h1 class="text-5xl">Become a Superhero</h1>
+                    <p class="mt-4 text-xl">Get a custom AI-generated cartoon portrait of yourself as a hero!</p>
+                    <a href="#" class="cta-button text-lg mt-8" data-contact-subject="Order: Custom Superhero Portrait" data-contact-body="Hello! I'd like to order a custom superhero portrait for $60. Please send me the next steps for payment and photo submission."><i class="fas fa-bolt mr-2"></i>Order Your Portrait - $60</a>
+                </div>
+            </div>
+            
+            <h2 class="text-3xl font-light mt-16 mb-6">How It Works</h2>
+            <div class="how-it-works-grid">
+                <div class="project-card p-6">
+                    <h3 class="text-xl font-semibold"><span class="text-2xl" style="color:var(--glow-color)">1.</span> Place Your Order</h3>
+                    <p class="mt-2">Click the order button to start the process. We'll finalize payment and get the details for your artwork.</p>
+                </div>
+                <div class="project-card p-6">
+                    <h3 class="text-xl font-semibold"><span class="text-2xl" style="color:var(--glow-color)">2.</span> Submit Your Photo</h3>
+                    <p class="mt-2">Send a clear, high-quality photo of the person you want transformed. Describe any specific styles or colors you have in mind.</p>
+                </div>
+                <div class="project-card p-6">
+                    <h3 class="text-xl font-semibold"><span class="text-2xl" style="color:var(--glow-color)">3.</span> Receive Your Art</h3>
+                    <p class="mt-2">Within a few days, you'll receive a high-resolution digital image of your custom superhero portrait, ready to share!</p>
+                </div>
+            </div>
+
+             <h2 class="text-3xl font-light mt-16 mb-6">Examples</h2>
+             <div class="project-grid">
+                <div class="project-card"><img src="https://placehold.co/600x600/0f0524/FF6384?text=Example+1" alt="Example superhero portrait 1"></div>
+                <div class="project-card"><img src="https://placehold.co/600x600/0f0524/FF6384?text=Example+2" alt="Example superhero portrait 2"></div>
+                <div class="project-card"><img src="https://placehold.co/600x600/0f0524/FF6384?text=Example+3" alt="Example superhero portrait 3"></div>
+             </div>
+        </div>
+    </div>
+
+
     <!-- Contact Page Section -->
     <div id="page-contact" class="page-section" style="--glow-color: rgba(232, 177, 14, 0.7);">
         <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
@@ -278,10 +368,9 @@
 
 
     <script>
-        // Waits for the entire page to load, including styles and images
         window.addEventListener('load', function() {
             // --- Global Site Variables ---
-            const YOUR_EMAIL = "max@starrtree.org"; // Change this to your new email later
+            const YOUR_EMAIL = "max@starrtree.org"; 
 
             // --- Initial Setup ---
             createParticles();
@@ -298,13 +387,20 @@
             const pages = document.querySelectorAll('.page-section');
             const backButtons = document.querySelectorAll('.back-button');
 
-            const showPage = (pageId) => {
+            const showPage = (pageId, previousPageId = null) => {
                 homepage.classList.add('hidden');
                 setTimeout(() => {
                     pages.forEach(p => p.classList.remove('active'));
                     const activePage = document.getElementById(pageId);
-                    if (activePage) activePage.classList.add('active');
-                    window.scrollTo(0, 0); // Scroll to top of new page
+                    if (activePage) {
+                        activePage.classList.add('active');
+                        // Store where to go back to
+                        const backBtn = activePage.querySelector('.back-button');
+                        if (backBtn) {
+                           backBtn.dataset.previous = previousPageId || 'homepage-container';
+                        }
+                    }
+                    window.scrollTo(0, 0); 
                 }, 500);
             };
 
@@ -313,13 +409,23 @@
                 homepage.classList.remove('hidden');
             };
             
-            backButtons.forEach(button => button.addEventListener('click', showHomepage));
+            backButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const prevPageId = e.currentTarget.dataset.previous;
+                    if (prevPageId && prevPageId !== 'homepage-container') {
+                        showPage(prevPageId);
+                    } else {
+                        showHomepage();
+                    }
+                });
+            });
 
             // --- Smart Contact Page Logic ---
-            const showContactPage = (subject, body) => {
+            const showContactPage = (subject, body, fromPageId) => {
                 const contactTitle = document.getElementById('contact-title');
                 const contactSubtitle = document.getElementById('contact-subtitle');
                 const mailtoLink = document.getElementById('contact-mailto-link');
+                const contactBackBtn = document.getElementById('page-contact').querySelector('.back-button');
 
                 contactTitle.textContent = subject;
                 contactSubtitle.textContent = "Click the button below to open your email client. The subject line is pre-filled for your convenience.";
@@ -328,27 +434,36 @@
                 const encodedBody = encodeURIComponent(body);
                 mailtoLink.href = `mailto:${YOUR_EMAIL}?subject=${encodedSubject}&body=${encodedBody}`;
 
-                showPage('page-contact');
+                showPage('page-contact', fromPageId);
             };
 
             // --- Global Click Handler for Navigation and Contact ---
             document.body.addEventListener('click', (e) => {
+                const button = e.target.closest('a.cta-button, .leaf');
+                if (!button) return;
+
+                e.preventDefault();
+
                 // Main Leaf Navigation
-                const leaf = e.target.closest('.leaf');
-                if (leaf) {
-                    e.preventDefault();
-                    const pageId = leaf.getAttribute('href').substring(1);
+                if (button.classList.contains('leaf')) {
+                    const pageId = button.getAttribute('href').substring(1);
                     showPage(pageId);
-return;
+                    return;
                 }
 
+                // Page Link Button (like the new superhero one)
+                if (button.dataset.pageLink) {
+                    const currentPage = button.closest('.page-section').id;
+                    showPage(button.dataset.pageLink, currentPage);
+                    return;
+                }
+                
                 // Contact Button Delegation
-                const contactButton = e.target.closest('[data-contact-subject]');
-                if (contactButton) {
-                    e.preventDefault();
-                    const subject = contactButton.dataset.contactSubject;
-                    const body = contactButton.dataset.contactBody;
-                    showContactPage(subject, body);
+                if (button.dataset.contactSubject) {
+                    const subject = button.dataset.contactSubject;
+                    const body = button.dataset.contactBody;
+                    const fromPage = button.closest('.page-section')?.id || 'homepage-container';
+                    showContactPage(subject, body, fromPage);
                 }
             });
         });
