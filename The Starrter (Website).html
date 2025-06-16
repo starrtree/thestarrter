@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The StarrTer - Rooted in Light</title>
+    
+    <!-- External libraries (Tailwind, Font Awesome) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Import Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at center, #0f0524 0%, #050014 100%);
+            overflow-x: hidden;
+            min-height: 100vh;
+            color: #f5f5f5;
+        }
+
+        /* --- Homepage Styles --- */
+        #homepage-container {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        #homepage-container.hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* NEW: Wrapper for the main content to apply a positional transform */
+        .main-content-wrapper {
+            transform: translate(5vw, 8vh); /* Moves content 5% of viewport width right and 8% of viewport height down */
+        }
+
+        .starseed {
+            width: 80px; height: 80px; background: radial-gradient(circle, #f9d71c 0%, #e8b10e 70%, #d49b04 100%);
+            border-radius: 50%; box-shadow: 0 0 30px 10px rgba(248, 212, 52, 0.4); position: relative;
+            animation: pulse 4s infinite ease-in-out; z-index: 20;
+            transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+        }
+        .starseed:hover { transform: scale(1.15); box-shadow: 0 0 50px 20px rgba(248, 212, 52, 0.7); }
+        .starseed::before {
+            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 50%; background: radial-gradient(circle, rgba(248, 212, 52, 0.6) 0%, transparent 70%);
+            z-index: -1; animation: pulse 4s infinite ease-in-out 0.5s; transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+        }
+        .starseed:hover::before { transform: scale(1.1); opacity: 0.8; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px 10px rgba(248, 212, 52, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px 15px rgba(248, 212, 52, 0.6); }
+        }
+
+        .branch { position: absolute; transform-origin: left center; z-index: 1; overflow: visible; }
+        .branch-path { stroke-width: 2; fill: none; stroke-linecap: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 5s forwards; }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+
+        .leaf {
+            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px; cursor: pointer; position: absolute; background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); z-index: 10;
+            opacity: 0; transform: translate(-50%, -50%) scale(0.8);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, background-color 0.3s ease;
+        }
+        .leaf.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .leaf.visible:hover { transform: translate(-50%, -50%) scale(1.2); background: rgba(255, 255, 255, 0.15); }
+        .leaf::after {
+            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border-radius: 50%; z-index: -1; opacity: 0; transition: opacity 0.3s ease;
+        }
+        .leaf:hover::after { opacity: 0.8; }
+        .leaf.music:hover { box-shadow: 0 0 20px 5px rgba(75, 192, 192, 0.6); }
+        .leaf.music::after { background: rgba(75, 192, 192, 0.3); }
+        .leaf.ai:hover { box-shadow: 0 0 20px 5px rgba(255, 99, 132, 0.6); }
+        .leaf.ai::after { background: rgba(255, 99, 132, 0.3); }
+        .leaf.design:hover { box-shadow: 0 0 20px 5px rgba(54, 162, 235, 0.6); }
+        .leaf.design::after { background: rgba(54, 162, 235, 0.3); }
+        .leaf.engineering:hover { box-shadow: 0 0 20px 5px rgba(153, 102, 255, 0.6); }
+        .leaf.engineering::after { background: rgba(153, 102, 255, 0.3); }
+
+        .particle {
+            position: absolute; background: radial-gradient(circle, rgba(248, 212, 52, 0.8) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: 0; opacity: 0.6; animation: float linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; }
+            90% { opacity: 0.6; } 100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .tagline { text-shadow: 0 0 10px rgba(248, 212, 52, 0.5); letter-spacing: 2px; font-weight: 300; }
+        .container { position: relative; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .branches-container, .leaves-container { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
+        .leaves-container { pointer-events: auto; }
+        .tooltip {
+            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap; opacity: 0;
+            transition: opacity 0.3s ease; pointer-events: none;
+        }
+        .leaf:hover .tooltip { opacity: 1; }
+        
+        /* --- Inner Page Styles --- */
+        .page-section {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh;
+            padding: 6rem 2rem 2rem 2rem; animation: page-fade-in 0.7s forwards; overflow-y: auto;
+        }
+        .page-section.active { display: block; }
+        @keyframes page-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .back-button {
+            position: fixed; top: 2rem; left: 2rem; background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; padding: 0.5rem 1rem; border-radius: 9999px; cursor: pointer;
+            transition: all 0.3s ease; z-index: 100;
+        }
+        .back-button:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
+        
+        .page-content { max-width: 900px; margin: 0 auto; text-align: center; }
+        .page-content h1 {
+            font-size: 3rem; font-weight: 300; letter-spacing: 2px;
+            text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.5));
+        }
+        .page-content > p { font-size: 1.125rem; line-height: 1.8; margin-top: 1rem; color: #ccc; max-width: 700px; margin-left: auto; margin-right: auto; }
+
+        /* --- Project Grid Styles --- */
+        .project-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem; margin-top: 4rem; text-align: left;
+        }
+        .project-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 20px var(--glow-color, rgba(255,255,255,0.1));
+        }
+        .project-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-content h3 { font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; }
+        .card-content p { font-size: 0.95rem; color: #bbb; line-height: 1.6; flex-grow: 1; margin-bottom: 1.5rem; }
+        .cta-button {
+            display: inline-block; background-color: var(--glow-color, #e8b10e); color: #050014;
+            padding: 0.5rem 1rem; border-radius: 9999px; text-decoration: none; font-weight: 600;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .cta-button:hover { transform: scale(1.05); }
+        
+        @media (max-width: 768px) {
+            .starseed { width: 60px; height: 60px; }
+            .leaf { width: 50px; height: 50px; font-size: 20px; }
+            .page-content h1 { font-size: 2rem; }
+            .page-content > p { font-size: 1rem; }
+            .page-section { padding: 5rem 1rem 1rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="homepage-container" class="container">
+        <div id="particles"></div>
+        <div id="branches-container" class="branches-container"></div>
+        <div id="leaves-container" class="leaves-container"></div>
+        <!-- UPDATED: Added main-content-wrapper class for positioning -->
+        <div class="main-content-wrapper relative z-30 flex flex-col items-center justify-center">
+            <div id="starseed" class="starseed mb-8"></div>
+            <h1 class="text-4xl font-light mb-2 tracking-wider">THE STARRTER</h1>
+            <p class="tagline text-xl mb-12">Rooted in Light</p>
+            <!-- Homepage Contact Button -->
+            <a href="#" class="cta-button mt-4" style="--glow-color: #e8b10e;" data-contact-subject="General Inquiry from TheStarrTer.com" data-contact-body="Hello, I'd like to make a general inquiry.">
+                <i class="fas fa-envelope mr-2"></i>Contact Me
+            </a>
+        </div>
+    </div>
+
+    <!-- Page Sections -->
+    <div id="page-music" class="page-section" style="--glow-color: rgba(75, 192, 192, 0.6);">
+        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+        <div class="page-content">
+            <h1>Music</h1>
+            <p>Expression through sound, emotion, and cultural memory. A collection of services and products for artists and listeners.</p>
+            <div class="project-grid">
+                <div class="project-card">
+                    <img src="https://placehold.co/600x400/0f0524/4BC0C0?text=Custom+Themes" alt="Custom Theme Songs placeholder">
+                    <div class="card-content">
+                        <h3>Custom Theme Songs</h3>
+                        <p>A bespoke service for content creators, brands, or individuals seeking a unique theme song. Prices are negotiated based on project scope.</p>
+                        <a href="#" class="cta-button" data-contact-subject="Inquiry: Custom Theme Song" data-contact-body="Hi, I'm interested in getting a quote for a custom theme song. Please let me know your process and availability."><i class="fas fa-envelope mr-2"></i>Contact for Quote</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://placehold.co/600x400/0f0524/4BC0C0?text=Vocal+Presets" alt="Vocal Presets placeholder">
+                    <div class="card-content">
+                        <h3>Bandlab Vocal Presets</h3>
+                        <p>Professionally engineered vocal presets for Bandlab, designed to give your tracks a polished, studio-quality sound with one click.</p>
+                        <a href="#LINK-TO-YOUR-BANDLAB-PROFILE" class="cta-button" target="_blank"><i class="fas fa-store mr-2"></i>View on Bandlab</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-ai" class="page-section" style="--glow-color: rgba(255, 99, 132, 0.6);">
+        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+        <div class="page-content">
+            <h1>AI Work</h1>
+            <p>Thoughtful automation, augmentation, and insight. Explore custom agents, productivity flows, and educational tools designed to harmonize technology and humanity.</p>
+            <div class="project-grid">
+                <div class="project-card">
+                    <img src="https://placehold.co/600x400/0f0524/FF6384?text=Custom+GPT+Service" alt="Custom GPT Service placeholder">
+                    <div class="card-content">
+                        <h3>Custom GPT Building Service</h3>
+                        <p>Need a powerful, trained AI agent for your business or personal use? I will build and configure a custom GPT based on your specific needs and data.</p>
+                        <a href="#" class="cta-button" data-contact-subject="Inquiry: Custom GPT Building Service" data-contact-body="Hello, I would like to discuss building a custom GPT."><i class="fas fa-clipboard-list mr-2"></i>Start a Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="page-design" class="page-section" style="--glow-color: rgba(54, 162, 235, 0.6);">
+        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+        <div class="page-content">
+            <h1>Design & Film</h1>
+            <p>Storytelling through image, motion, and experience. Creative services for artists and businesses, plus community-focused educational programs.</p>
+            <div class="project-grid">
+                <div class="project-card">
+                    <img src="https://placehold.co/600x400/0f0524/36A2EB?text=SWAC" alt="Shoot With A Camera placeholder">
+                    <div class="card-content">
+                        <h3>Shoot With A Camera Program</h3>
+                        <p>A free program teaching kids camera and film tech to promote positive storytelling.</p>
+                        <a href="#LINK-TO-GOOGLE-FORM-FOR-SWAC" class="cta-button" target="_blank"><i class="fas fa-hand-holding-heart mr-2"></i>Sign Up (Free)</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://placehold.co/600x400/0f0524/36A2EB?text=AI+Ads" alt="AI Ads placeholder">
+                    <div class="card-content">
+                        <h3>AI Ad & Visualizer Service</h3>
+                        <p>Book my services to create compelling AI-powered video ads for your brand or mesmerizing music visualizers for your tracks.</p>
+                        <a href="#" class="cta-button" data-contact-subject="Inquiry: AI Ad & Visualizer Service" data-contact-body="Hello, I'm interested in your AI Ad and Music Visualizer service."><i class="fas fa-clipboard-list mr-2"></i>Book This Service</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-engineering" class="page-section" style="--glow-color: rgba(153, 102, 255, 0.6);">
+       <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+       <div class="page-content">
+           <h1>Engineering</h1>
+            <p>Building tools, systems, and futures. This section covers web development, smart automations, and creative problem-solving with a focus on building with intention.</p>
+           <div class="project-grid">
+               <div class="project-card">
+                   <img src="https://placehold.co/600x400/0f0524/9966FF?text=Web+Development" alt="Web Development placeholder image">
+                   <div class="card-content">
+                       <h3>Web Development Service</h3>
+                       <p>Building beautiful, performant, and intuitive websites and applications. Specializing in modern no-code platforms and custom frontend development.</p>
+                       <a href="#" class="cta-button" data-contact-subject="Inquiry: Web Development Service" data-contact-body="Hi, I'd like to discuss a web development project."><i class="fas fa-clipboard-list mr-2"></i>Start a Web Project</a>
+                   </div>
+               </div>
+           </div>
+       </div>
+    </div>
+
+    <!-- Contact Page Section -->
+    <div id="page-contact" class="page-section" style="--glow-color: rgba(232, 177, 14, 0.7);">
+        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+        <div class="page-content flex flex-col items-center justify-center min-h-[80vh]">
+            <h1 id="contact-title">Let's Connect</h1>
+            <p id="contact-subtitle" class="mt-4 text-lg">I'm excited to hear about your project. Click the button below to open your email client with a pre-filled message, making it easy to start the conversation.</p>
+            <a id="contact-mailto-link" href="#" class="cta-button text-xl mt-12">
+                <i class="fas fa-paper-plane mr-3"></i>Open Email
+            </a>
+        </div>
+    </div>
+
+
+    <script>
+        // Waits for the entire page to load, including styles and images
+        window.addEventListener('load', function() {
+            // --- Global Site Variables ---
+            const YOUR_EMAIL = "max@starrtree.org"; // Change this to your new email later
+
+            // --- Initial Setup ---
+            createParticles();
+            createBranchesAndLeaves();
+            setInterval(createParticles, 1000);
+            window.addEventListener('resize', () => {
+                document.getElementById('branches-container').innerHTML = '';
+                document.getElementById('leaves-container').innerHTML = '';
+                createBranchesAndLeaves();
+            });
+
+            // --- Navigation Logic ---
+            const homepage = document.getElementById('homepage-container');
+            const pages = document.querySelectorAll('.page-section');
+            const backButtons = document.querySelectorAll('.back-button');
+
+            const showPage = (pageId) => {
+                homepage.classList.add('hidden');
+                setTimeout(() => {
+                    pages.forEach(p => p.classList.remove('active'));
+                    const activePage = document.getElementById(pageId);
+                    if (activePage) activePage.classList.add('active');
+                    window.scrollTo(0, 0); // Scroll to top of new page
+                }, 500);
+            };
+
+            const showHomepage = () => {
+                pages.forEach(p => p.classList.remove('active'));
+                homepage.classList.remove('hidden');
+            };
+            
+            backButtons.forEach(button => button.addEventListener('click', showHomepage));
+
+            // --- Smart Contact Page Logic ---
+            const showContactPage = (subject, body) => {
+                const contactTitle = document.getElementById('contact-title');
+                const contactSubtitle = document.getElementById('contact-subtitle');
+                const mailtoLink = document.getElementById('contact-mailto-link');
+
+                contactTitle.textContent = subject;
+                contactSubtitle.textContent = "Click the button below to open your email client. The subject line is pre-filled for your convenience.";
+                
+                const encodedSubject = encodeURIComponent(subject);
+                const encodedBody = encodeURIComponent(body);
+                mailtoLink.href = `mailto:${YOUR_EMAIL}?subject=${encodedSubject}&body=${encodedBody}`;
+
+                showPage('page-contact');
+            };
+
+            // --- Global Click Handler for Navigation and Contact ---
+            document.body.addEventListener('click', (e) => {
+                // Main Leaf Navigation
+                const leaf = e.target.closest('.leaf');
+                if (leaf) {
+                    e.preventDefault();
+                    const pageId = leaf.getAttribute('href').substring(1);
+                    showPage(pageId);
+return;
+                }
+
+                // Contact Button Delegation
+                const contactButton = e.target.closest('[data-contact-subject]');
+                if (contactButton) {
+                    e.preventDefault();
+                    const subject = contactButton.dataset.contactSubject;
+                    const body = contactButton.dataset.contactBody;
+                    showContactPage(subject, body);
+                }
+            });
+        });
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            const particleCount = 10;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div'); particle.classList.add('particle');
+                const size = Math.random() * 10 + 5; const posX = Math.random() * window.innerWidth;
+                const duration = Math.random() * 15 + 10; const delay = Math.random() * 5;
+                particle.style.width = `${size}px`; particle.style.height = `${size}px`;
+                particle.style.left = `${posX}px`; particle.style.top = `${window.innerHeight + size}px`;
+                particle.style.animationDuration = `${duration}s`; particle.style.animationDelay = `${delay}s`;
+                particlesContainer.appendChild(particle);
+                setTimeout(() => { particle.remove(); }, (duration + delay) * 1000);
+            }
+        }
+
+        function createBranchesAndLeaves() {
+            const branchesContainer = document.getElementById('branches-container');
+            const leavesContainer = document.getElementById('leaves-container');
+            const starseed = document.getElementById('starseed');
+            if (!starseed) return;
+
+            const starseedRect = starseed.getBoundingClientRect();
+            const starseedCenterX = starseedRect.left + starseedRect.width / 2;
+            const starseedCenterY = starseedRect.top + starseedRect.height / 2;
+            const baseDistance = Math.min(window.innerWidth, window.innerHeight) * 0.38;
+
+            const leavesDataArray = [
+                { id: 'page-music', icon: 'fa-music', angle: 45, label: 'Music', class: 'music', branchColor: 'rgba(75, 192, 192, 0.7)' },
+                { id: 'page-ai', icon: 'fa-robot', angle: 135, label: 'AI Work', class: 'ai', branchColor: 'rgba(255, 99, 132, 0.7)' },
+                { id: 'page-design', icon: 'fa-paint-brush', angle: 225, label: 'Design & Film', class: 'design', branchColor: 'rgba(54, 162, 235, 0.7)' },
+                { id: 'page-engineering', icon: 'fa-rocket', angle: 315, label: 'Engineering', class: 'engineering', branchColor: 'rgba(153, 102, 255, 0.7)' }
+            ];
+
+            leavesDataArray.forEach(leafData => {
+                const angleRad = (leafData.angle * Math.PI) / 180;
+                const leafX = starseedCenterX + Math.cos(angleRad) * baseDistance;
+                const leafY = starseedCenterY + Math.sin(angleRad) * baseDistance;
+                
+                const branch = document.createElement('div'); branch.classList.add('branch');
+                branch.style.left = '0px'; branch.style.top = '0px'; branch.style.width = '100%'; branch.style.height = '100%';
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('width', '100%'); svg.setAttribute('height', '100%');
+                svg.style.position = 'absolute'; svg.style.left = '0'; svg.style.top = '0'; svg.style.overflow = 'visible';
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.classList.add('branch-path');
+                const controlX = starseedCenterX + Math.cos(angleRad) * (baseDistance / 2) + (Math.random() * 40 - 20);
+                const controlY = starseedCenterY + Math.sin(angleRad) * (baseDistance / 2) + (Math.random() * 40 - 20);
+                const pathData = `M ${starseedCenterX} ${starseedCenterY} Q ${controlX} ${controlY}, ${leafX} ${leafY}`;
+                path.setAttribute('d', pathData); path.setAttribute('stroke', leafData.branchColor);
+                svg.appendChild(path); branch.appendChild(svg); branchesContainer.appendChild(branch);
+                
+                const leafElement = document.createElement('a'); leafElement.href = `#${leafData.id}`;
+                leafElement.classList.add('leaf', leafData.class);
+                leafElement.style.left = `${leafX}px`; leafElement.style.top = `${leafY}px`;
+                leafElement.setAttribute('aria-label', leafData.label);
+                
+                const icon = document.createElement('i'); icon.classList.add('fas', leafData.icon);
+                icon.setAttribute('aria-hidden', 'true'); leafElement.appendChild(icon);
+                const tooltip = document.createElement('div'); tooltip.classList.add('tooltip');
+                tooltip.textContent = leafData.label; leafElement.appendChild(tooltip);
+                
+                path.addEventListener('animationend', () => leafElement.classList.add('visible'));
+                leavesContainer.appendChild(leafElement);
+            });
+        }
+    </script>
+</body>
+</html>
