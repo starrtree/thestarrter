@@ -3,536 +3,673 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The StarrTer - Rooted in Light</title>
-    
-    <!-- External libraries (Tailwind, Font Awesome) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>Cosmic Energy Canvas</title>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Import Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: radial-gradient(circle at center, #0f0524 0%, #050014 100%);
-            overflow-x: hidden;
-            min-height: 100vh;
-            color: #f5f5f5;
+        :root {
+            --gold-color: #ffc300;
         }
 
-        /* --- Homepage Styles --- */
-        #homepage-container {
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        #homepage-container.hidden {
+        canvas { 
+            display: block; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            cursor: grab;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+        /* --- Service Nodes --- */
+        .service-nodes-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            pointer-events: none; 
+            transition: transform 0.2s ease-out; 
+        }
+        .service-node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            transform: scale(0.2);
             opacity: 0;
-            transform: scale(0.95);
+            cursor: default;
             pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-        .main-content-wrapper {
-            transform: translate(0, 0); /* Resetting to let flexbox handle centering perfectly */
-        }
-
-        .starseed {
-            width: 80px; height: 80px; background: radial-gradient(circle, #f9d71c 0%, #e8b10e 70%, #d49b04 100%);
-            border-radius: 50%; box-shadow: 0 0 30px 10px rgba(248, 212, 52, 0.4); position: relative;
-            animation: pulse 4s infinite ease-in-out; z-index: 20;
-            transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
-        }
-        .starseed:hover { transform: scale(1.15); box-shadow: 0 0 50px 20px rgba(248, 212, 52, 0.7); }
-        .starseed::before {
-            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
-            border-radius: 50%; background: radial-gradient(circle, rgba(248, 212, 52, 0.6) 0%, transparent 70%);
-            z-index: -1; animation: pulse 4s infinite ease-in-out 0.5s; transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
-        }
-        .starseed:hover::before { transform: scale(1.1); opacity: 0.8; }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 30px 10px rgba(248, 212, 52, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px 15px rgba(248, 212, 52, 0.6); }
-        }
-
-        .branch { position: absolute; transform-origin: left center; z-index: 1; overflow: visible; }
-        .branch-path { stroke-width: 2; fill: none; stroke-linecap: round; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 5s forwards; }
-        @keyframes draw { to { stroke-dashoffset: 0; } }
-
-        .leaf {
-            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 24px; cursor: pointer; position: absolute; background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.1); z-index: 10;
-            opacity: 0; transform: translate(-50%, -50%) scale(0.8);
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, background-color 0.3s ease;
-        }
-        .leaf.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        .leaf.visible:hover { transform: translate(-50%, -50%) scale(1.2); background: rgba(255, 255, 255, 0.15); }
-        .leaf::after {
-            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
-            border-radius: 50%; z-index: -1; opacity: 0; transition: opacity 0.3s ease;
-        }
-        .leaf:hover::after { opacity: 0.8; }
-        .leaf.music:hover { box-shadow: 0 0 20px 5px rgba(75, 192, 192, 0.6); }
-        .leaf.music::after { background: rgba(75, 192, 192, 0.3); }
-        .leaf.ai:hover { box-shadow: 0 0 20px 5px rgba(255, 99, 132, 0.6); }
-        .leaf.ai::after { background: rgba(255, 99, 132, 0.3); }
-        .leaf.design:hover { box-shadow: 0 0 20px 5px rgba(54, 162, 235, 0.6); }
-        .leaf.design::after { background: rgba(54, 162, 235, 0.3); }
-        .leaf.engineering:hover { box-shadow: 0 0 20px 5px rgba(153, 102, 255, 0.6); }
-        .leaf.engineering::after { background: rgba(153, 102, 255, 0.3); }
-
-        .particle {
-            position: absolute; background: radial-gradient(circle, rgba(248, 212, 52, 0.8) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none; z-index: 0; opacity: 0.6; animation: float linear infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; }
-            90% { opacity: 0.6; } 100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-
-        .tagline { text-shadow: 0 0 10px rgba(248, 212, 52, 0.5); letter-spacing: 2px; font-weight: 300; }
-        .container { position: relative; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .branches-container, .leaves-container { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
-        .leaves-container { pointer-events: auto; }
-        .tooltip {
-            position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7);
-            padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap; opacity: 0;
-            transition: opacity 0.3s ease; pointer-events: none;
-        }
-        .leaf:hover .tooltip { opacity: 1; }
-        
-        /* --- Inner Page Styles --- */
-        .page-section {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh;
-            padding: 6rem 2rem 2rem 2rem; animation: page-fade-in 0.7s forwards; overflow-y: auto;
-        }
-        .page-section.active { display: block; }
-        @keyframes page-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .back-button {
-            position: fixed; top: 2rem; left: 2rem; background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; padding: 0.5rem 1rem; border-radius: 9999px; cursor: pointer;
-            transition: all 0.3s ease; z-index: 100;
-        }
-        .back-button:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
-        
-        .page-content { max-width: 900px; margin: 0 auto; text-align: center; }
-        .page-content h1 {
-            font-size: 3rem; font-weight: 300; letter-spacing: 2px;
-            text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.5));
-        }
-        .page-content > p { font-size: 1.125rem; line-height: 1.8; margin-top: 1rem; color: #ccc; max-width: 700px; margin-left: auto; margin-right: auto; }
-
-        /* --- Project Grid Styles --- */
-        .project-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem; margin-top: 4rem; text-align: left;
-        }
-        .project-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex; flex-direction: column;
-        }
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 20px var(--glow-color, rgba(255,255,255,0.1));
-        }
-        .project-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-        .card-content { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-content h3 { font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; }
-        .card-content p { font-size: 0.95rem; color: #bbb; line-height: 1.6; flex-grow: 1; margin-bottom: 1.5rem; }
-        .cta-button {
-            display: inline-block; background-color: var(--glow-color, #e8b10e); color: #050014;
-            padding: 0.5rem 1rem; border-radius: 9999px; text-decoration: none; font-weight: 600;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-        .cta-button:hover { transform: scale(1.05); }
-
-        /* --- NEW: Superhero Page Styles --- */
-        .superhero-hero {
-            position: relative;
-            background: #0a021c;
-            border-radius: 1.5rem;
-            padding: 5rem 2rem;
-            margin-top: -4rem; /* Pull it up a bit */
-            overflow: hidden;
-            border: 1px solid rgba(153, 102, 255, 0.3);
-        }
-        .superhero-hero::before, .superhero-hero::after {
+        /* Glow effect using a blurred pseudo-element */
+        .service-node::after {
             content: '';
             position: absolute;
-            width: 800px;
-            height: 800px;
+            top: -5px;
+            left: -5px;
+            width: calc(100% + 10px);
+            height: calc(100% + 10px);
             border-radius: 50%;
-            opacity: 0.15;
-            animation: rotate-breathe 25s linear infinite;
+            filter: blur(10px);
+            z-index: -1;
+            opacity: 0.7;
+            transition: opacity 0.3s ease, filter 0.3s ease;
         }
-        .superhero-hero::before {
-            background: radial-gradient(circle, #9966FF, transparent 60%);
-            top: -400px;
-            left: -400px;
+        /* Larger hover area */
+        .service-node::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 110px;
+            height: 110px;
+            background: transparent;
+            border-radius: 50%;
         }
-        .superhero-hero::after {
-            background: radial-gradient(circle, #36A2EB, transparent 60%);
-            bottom: -400px;
-            right: -400px;
-            animation-direction: reverse;
-            animation-duration: 20s;
+
+        .service-node.activated {
+            transform: scale(1);
+            opacity: 1;
+            cursor: pointer;
+            pointer-events: all;
+            animation: pulse 2s infinite ease-in-out;
         }
-        @keyframes rotate-breathe {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
+        .service-node .icon {
+            font-size: 22px;
+            transition: all 0.3s ease;
         }
-        .superhero-hero-content {
-            position: relative;
-            z-index: 2;
+        .service-node .description {
+            position: absolute;
+            bottom: -45px;
+            width: 220px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 8px, 0 0 12px;
+            pointer-events: none; 
         }
-        .how-it-works-grid {
-             display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-             gap: 2rem; margin-top: 3rem; text-align: left;
+        .service-node.activated:hover {
+            transform: scale(1.1);
+            animation-play-state: paused;
+        }
+        .service-node.activated:hover .icon {
+            transform: scale(1.1);
+        }
+        .service-node.activated:hover .description {
+            opacity: 1;
+        }
+
+        .service-node.activated:hover::after {
+            opacity: 1;
+            filter: blur(15px);
         }
         
-        @media (max-width: 768px) {
-            .starseed { width: 60px; height: 60px; }
-            .leaf { width: 50px; height: 50px; font-size: 20px; }
-            .page-content h1 { font-size: 2rem; }
-            .page-content > p { font-size: 1rem; }
-            .page-section { padding: 5rem 1rem 1rem 1rem; }
-            .superhero-hero { padding: 4rem 1.5rem; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
+
+
+        /* --- Unique Node Colors & Gradients --- */
+        .service-node {
+            border-color: transparent;
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+        }
+
+        #node-music {
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #39ff14, #ff00ff);
+        }
+        #node-music::after {
+            background: linear-gradient(45deg, #39ff14, #ff00ff);
+        }
+        #node-music .icon, #node-music .description { color: #39ff14; }
+
+        #node-ai {
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #8A2BE2, #00BFFF);
+        }
+        #node-ai::after {
+            background: linear-gradient(45deg, #8A2BE2, #00BFFF);
+        }
+        #node-ai .icon, #node-ai .description { color: #00BFFF; }
+
+        #node-design {
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #FF4500, #FF0000);
+        }
+        #node-design::after {
+            background: linear-gradient(45deg, #FF4500, #FF0000);
+        }
+        #node-design .icon, #node-design .description { color: #FF4500; }
+
+        #node-engineering {
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #0000FF, #FFFF00);
+        }
+        #node-engineering::after {
+            background: linear-gradient(45deg, #0000FF, #FFFF00);
+        }
+        #node-engineering .icon, #node-engineering .description { color: #FFFF00; }
+
+
+        /* Repositioning the nodes */
+        #node-ai { top: 15%; left: 50%; transform: translateX(-50%) scale(0.2); }
+        #node-music { bottom: 10%; left: 50%; transform: translateX(-50%) scale(0.2); }
+        #node-design { top: 50%; right: 20%; transform: translateY(-50%) scale(0.2); }
+        #node-engineering { top: 50%; left: 20%; transform: translateY(-50%) scale(0.2); }
+        
+        .service-node.activated#node-ai, .service-node.activated#node-music { animation-name: pulse-x; }
+        .service-node.activated#node-design, .service-node.activated#node-engineering { animation-name: pulse-y; }
+        
+        .service-node.activated#node-ai:hover, .service-node.activated#node-music:hover { transform: translateX(-50%) scale(1.1); animation-name: none; }
+        .service-node.activated#node-design:hover, .service-node.activated#node-engineering:hover { transform: translateY(-50%) scale(1.1); animation-name: none; }
+        
+        @keyframes pulse-x {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+        @keyframes pulse-y {
+            0% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.05); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+
+        /* --- Modal --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center;
+            z-index: 100; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #0a0a0a;
+            border: 3px solid var(--gold-color);
+            width: 450px;
+            height: 450px;
+            max-width: 90vw;
+            max-height: 90vw;
+            border-radius: 50%;
+            padding: 40px;
+            box-sizing: border-box;
+            color: #eee;
+            box-shadow: 0 0 30px var(--gold-color);
+            position: relative;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .modal.active .modal-content { transform: scale(1); }
+        .modal-content h2 { 
+            margin-top: 0; 
+            margin-bottom: 15px;
+            color: var(--gold-color); 
+            transition: color 0.3s ease; 
+        }
+        .modal-content p {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20%;
+            right: 20%;
+            transform: translate(50%, -50%);
+            font-size: 28px;
+            color: #fff; cursor: pointer; transition: color 0.2s;
+        }
+        .modal-close:hover { color: #ffc300; }
+
+        @media (max-width: 768px) {
+            .service-node { width: 40px; height: 40px; }
+            .service-node.activated .icon { font-size: 18px; }
+            #node-ai { top: 10%; }
+            #node-music { bottom: 5%; }
+            #node-design { top: 50%; right: 5%; }
+            #node-engineering { top: 50%; left: 5%; }
+            .service-node .description { font-size: 12px; bottom: -35px; width: 150px; }
+        }
+
     </style>
 </head>
 <body>
-    <div id="homepage-container" class="container">
-        <div id="particles"></div>
-        <div id="branches-container" class="branches-container"></div>
-        <div id="leaves-container" class="leaves-container"></div>
-        <div class="main-content-wrapper relative z-30 flex flex-col items-center justify-center">
-            <div id="starseed" class="starseed mb-8"></div>
-            <h1 class="text-4xl font-light mb-2 tracking-wider">THE STARRTER</h1>
-            <p class="tagline text-xl mb-12">Rooted in Light</p>
-            <a href="#" class="cta-button mt-4" style="--glow-color: #e8b10e;" data-contact-subject="General Inquiry from TheStarrTer.com" data-contact-body="Hello, I'd like to make a general inquiry.">
-                <i class="fas fa-envelope mr-2"></i>Contact Me
-            </a>
+    <canvas id="cosmicCanvas"></canvas>
+
+    <div class="service-nodes-container" id="nodesContainer">
+        <div class="service-node" id="node-music" data-service="music">
+            <div class="icon"><i class="fas fa-music"></i></div>
+            <div class="description"></div>
+        </div>
+        <div class="service-node" id="node-ai" data-service="ai">
+            <div class="icon"><i class="fas fa-robot"></i></div>
+            <div class="description"></div>
+        </div>
+        <div class="service-node" id="node-design" data-service="design">
+            <div class="icon"><i class="fas fa-paint-brush"></i></div>
+            <div class="description"></div>
+        </div>
+        <div class="service-node" id="node-engineering" data-service="engineering">
+            <div class="icon"><i class="fas fa-cogs"></i></div>
+            <div class="description"></div>
         </div>
     </div>
 
-    <!-- Page Sections -->
-    <div id="page-music" class="page-section" style="--glow-color: rgba(75, 192, 192, 0.6);">
-        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-        <div class="page-content">
-            <h1>Music</h1>
-            <p>Expression through sound, emotion, and cultural memory. A collection of services and products for artists and listeners.</p>
-            <div class="project-grid">
-                <div class="project-card">
-                    <img src="https://placehold.co/600x400/0f0524/4BC0C0?text=Custom+Themes" alt="Custom Theme Songs placeholder">
-                    <div class="card-content">
-                        <h3>Custom Theme Songs</h3>
-                        <p>A bespoke service for content creators, brands, or individuals seeking a unique theme song. Prices are negotiated based on project scope.</p>
-                        <a href="#" class="cta-button" data-contact-subject="Inquiry: Custom Theme Song" data-contact-body="Hi, I'm interested in getting a quote for a custom theme song."><i class="fas fa-envelope mr-2"></i>Contact for Quote</a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://placehold.co/600x400/0f0524/4BC0C0?text=Vocal+Presets" alt="Vocal Presets placeholder">
-                    <div class="card-content">
-                        <h3>Bandlab Vocal Presets</h3>
-                        <p>Professionally engineered vocal presets for Bandlab, designed to give your tracks a polished, studio-quality sound with one click.</p>
-                        <a href="#LINK-TO-YOUR-BANDLAB-PROFILE" class="cta-button" target="_blank"><i class="fas fa-store mr-2"></i>View on Bandlab</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-ai" class="page-section" style="--glow-color: rgba(255, 99, 132, 0.6);">
-        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-        <div class="page-content">
-            <h1>AI Work</h1>
-            <p>Thoughtful automation, augmentation, and insight. Explore custom agents, productivity flows, and educational tools designed to harmonize technology and humanity.</p>
-            <div class="project-grid">
-                <!-- NEW CARD FOR SUPERHERO SERVICE -->
-                <div class="project-card">
-                    <img src="https://placehold.co/600x400/0f0524/FF6384?text=Become+A+Hero" alt="Superhero Portrait placeholder">
-                    <div class="card-content">
-                        <h3>Custom Superhero Portraits</h3>
-                        <p>Get a custom cartoon superhero image of yourself or a loved one, generated with AI and refined by hand. The ultimate personalized profile picture.</p>
-                        <a href="#" class="cta-button" data-page-link="page-superhero"><i class="fas fa-mask mr-2"></i>Learn More</a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://placehold.co/600x400/0f0524/FF6384?text=Custom+GPT+Service" alt="Custom GPT Service placeholder">
-                    <div class="card-content">
-                        <h3>Custom GPT Building Service</h3>
-                        <p>Need a powerful, trained AI agent for your business or personal use? I will build and configure a custom GPT based on your specific needs and data.</p>
-                        <a href="#" class="cta-button" data-contact-subject="Inquiry: Custom GPT Building Service" data-contact-body="Hello, I would like to discuss building a custom GPT."><i class="fas fa-clipboard-list mr-2"></i>Start a Project</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div id="page-design" class="page-section" style="--glow-color: rgba(54, 162, 235, 0.6);">
-        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-        <div class="page-content">
-            <h1>Design & Film</h1>
-            <p>Storytelling through image, motion, and experience. Creative services for artists and businesses, plus community-focused educational programs.</p>
-            <div class="project-grid">
-                <div class="project-card">
-                    <img src="https://placehold.co/600x400/0f0524/36A2EB?text=SWAC" alt="Shoot With A Camera placeholder">
-                    <div class="card-content">
-                        <h3>Shoot With A Camera Program</h3>
-                        <p>A free program teaching kids camera and film tech to promote positive storytelling.</p>
-                        <a href="#LINK-TO-GOOGLE-FORM-FOR-SWAC" class="cta-button" target="_blank"><i class="fas fa-hand-holding-heart mr-2"></i>Sign Up (Free)</a>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://placehold.co/600x400/0f0524/36A2EB?text=AI+Ads" alt="AI Ads placeholder">
-                    <div class="card-content">
-                        <h3>AI Ad & Visualizer Service</h3>
-                        <p>Book my services to create compelling AI-powered video ads for your brand or mesmerizing music visualizers for your tracks.</p>
-                        <a href="#" class="cta-button" data-contact-subject="Inquiry: AI Ad & Visualizer Service" data-contact-body="Hello, I'm interested in your AI Ad and Music Visualizer service."><i class="fas fa-clipboard-list mr-2"></i>Book This Service</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-engineering" class="page-section" style="--glow-color: rgba(153, 102, 255, 0.6);">
-       <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-       <div class="page-content">
-           <h1>Engineering</h1>
-            <p>Building tools, systems, and futures. This section covers web development, smart automations, and creative problem-solving with a focus on building with intention.</p>
-           <div class="project-grid">
-               <div class="project-card">
-                   <img src="https://placehold.co/600x400/0f0524/9966FF?text=Web+Development" alt="Web Development placeholder image">
-                   <div class="card-content">
-                       <h3>Web Development Service</h3>
-                       <p>Building beautiful, performant, and intuitive websites and applications. Specializing in modern no-code platforms and custom frontend development.</p>
-                       <a href="#" class="cta-button" data-contact-subject="Inquiry: Web Development Service" data-contact-body="Hi, I'd like to discuss a web development project."><i class="fas fa-clipboard-list mr-2"></i>Start a Web Project</a>
-                   </div>
-               </div>
-           </div>
-       </div>
-    </div>
-
-    <!-- NEW SUPERHERO PAGE -->
-    <div id="page-superhero" class="page-section" style="--glow-color: rgba(255, 99, 132, 0.6);">
-        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-        <div class="page-content">
-            <div class="superhero-hero">
-                <div class="superhero-hero-content">
-                    <h1 class="text-5xl">Become a Superhero</h1>
-                    <p class="mt-4 text-xl">Get a custom AI-generated cartoon portrait of yourself as a hero!</p>
-                    <a href="#" class="cta-button text-lg mt-8" data-contact-subject="Order: Custom Superhero Portrait" data-contact-body="Hello! I'd like to order a custom superhero portrait for $60. Please send me the next steps for payment and photo submission."><i class="fas fa-bolt mr-2"></i>Order Your Portrait - $60</a>
-                </div>
-            </div>
-            
-            <h2 class="text-3xl font-light mt-16 mb-6">How It Works</h2>
-            <div class="how-it-works-grid">
-                <div class="project-card p-6">
-                    <h3 class="text-xl font-semibold"><span class="text-2xl" style="color:var(--glow-color)">1.</span> Place Your Order</h3>
-                    <p class="mt-2">Click the order button to start the process. We'll finalize payment and get the details for your artwork.</p>
-                </div>
-                <div class="project-card p-6">
-                    <h3 class="text-xl font-semibold"><span class="text-2xl" style="color:var(--glow-color)">2.</span> Submit Your Photo</h3>
-                    <p class="mt-2">Send a clear, high-quality photo of the person you want transformed. Describe any specific styles or colors you have in mind.</p>
-                </div>
-                <div class="project-card p-6">
-                    <h3 class="text-xl font-semibold"><span class="text-2xl" style="color:var(--glow-color)">3.</span> Receive Your Art</h3>
-                    <p class="mt-2">Within a few days, you'll receive a high-resolution digital image of your custom superhero portrait, ready to share!</p>
-                </div>
-            </div>
-
-             <h2 class="text-3xl font-light mt-16 mb-6">Examples</h2>
-             <div class="project-grid">
-                <div class="project-card"><img src="https://placehold.co/600x600/0f0524/FF6384?text=Example+1" alt="Example superhero portrait 1"></div>
-                <div class="project-card"><img src="https://placehold.co/600x600/0f0524/FF6384?text=Example+2" alt="Example superhero portrait 2"></div>
-                <div class="project-card"><img src="https://placehold.co/600x600/0f0524/FF6384?text=Example+3" alt="Example superhero portrait 3"></div>
-             </div>
-        </div>
-    </div>
-
-
-    <!-- Contact Page Section -->
-    <div id="page-contact" class="page-section" style="--glow-color: rgba(232, 177, 14, 0.7);">
-        <button class="back-button"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-        <div class="page-content flex flex-col items-center justify-center min-h-[80vh]">
-            <h1 id="contact-title">Let's Connect</h1>
-            <p id="contact-subtitle" class="mt-4 text-lg">I'm excited to hear about your project. Click the button below to open your email client with a pre-filled message, making it easy to start the conversation.</p>
-            <a id="contact-mailto-link" href="#" class="cta-button text-xl mt-12">
-                <i class="fas fa-paper-plane mr-3"></i>Open Email
-            </a>
+    <div class="modal" id="serviceModal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <p id="modalDescription"></p>
         </div>
     </div>
 
 
     <script>
-        window.addEventListener('load', function() {
-            // --- Global Site Variables ---
-            const YOUR_EMAIL = "max@starrtree.org"; 
+        const canvas = document.getElementById('cosmicCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-            // --- Initial Setup ---
-            createParticles();
-            createBranchesAndLeaves();
-            setInterval(createParticles, 1000);
-            window.addEventListener('resize', () => {
-                document.getElementById('branches-container').innerHTML = '';
-                document.getElementById('leaves-container').innerHTML = '';
-                createBranchesAndLeaves();
-            });
+        const centralFigure = new Image();
+        let imageFailedToLoad = false;
+        centralFigure.crossOrigin = "Anonymous"; 
+        centralFigure.onload = () => { run(); };
+        centralFigure.onerror = () => { imageFailedToLoad = true; run(); };
+        centralFigure.src = 'https://i.imgur.com/6lzWabU.png';
 
-            // --- Navigation Logic ---
-            const homepage = document.getElementById('homepage-container');
-            const pages = document.querySelectorAll('.page-section');
-            const backButtons = document.querySelectorAll('.back-button');
+        let stars = [];
+        let branches = [];
+        const STAR_COUNT = 500; 
+        const BRANCH_COUNT = 30;
+        const GOLD_COLOR = '#ffc300';
+        const DARK_GOLD_COLOR = '#ff9400';
+        let nodeTargets = [];
+        let globalScale = 1.0;
+        const nodesContainer = document.getElementById('nodesContainer');
+        let isDragging = false;
+        let lastMouseX = 0; let lastMouseY = 0;
+        let rotationX = 0; let rotationY = 0;
+        let tugOffsetX = 0; let tugOffsetY = 0;
+        let targetTugOffsetX = 0; let targetTugOffsetY = 0;
 
-            const showPage = (pageId, previousPageId = null) => {
-                homepage.classList.add('hidden');
-                setTimeout(() => {
-                    pages.forEach(p => p.classList.remove('active'));
-                    const activePage = document.getElementById(pageId);
-                    if (activePage) {
-                        activePage.classList.add('active');
-                        // Store where to go back to
-                        const backBtn = activePage.querySelector('.back-button');
-                        if (backBtn) {
-                           backBtn.dataset.previous = previousPageId || 'homepage-container';
-                        }
-                    }
-                    window.scrollTo(0, 0); 
-                }, 500);
-            };
+        let isIntroAnimationDone = false;
+        const introDuration = 2500; 
+        let introStartTime = null;
+        let beamStartTime = null;
+        const beamDuration = 600;
 
-            const showHomepage = () => {
-                pages.forEach(p => p.classList.remove('active'));
-                homepage.classList.remove('hidden');
-            };
-            
-            backButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const prevPageId = e.currentTarget.dataset.previous;
-                    if (prevPageId && prevPageId !== 'homepage-container') {
-                        showPage(prevPageId);
-                    } else {
-                        showHomepage();
-                    }
-                });
-            });
+        const serviceData = {
+            music: { title: "Music", full: "My musical services are designed to give your project a polished, studio-quality sound. I offer custom theme song creation, a bespoke service for brands and individuals seeking a unique sonic signature. I also provide professionally engineered vocal presets for Bandlab, helping artists achieve a professional sound with ease." },
+            ai: { title: "AI", full: "Harness the power of artificial intelligence. I specialize in building and configuring custom GPTs trained on your specific data and needs. From automating repetitive tasks to creating powerful new creative tools, I design AI solutions that harmonize technology and humanity." },
+            design: { title: "Art/Digital Media", full: "Storytelling through image, motion, and experience. I offer creative services for artists and businesses, including the creation of compelling AI-powered video ads and mesmerizing music visualizers for your tracks. Let's bring your vision to life." },
+            engineering: { title: "Engineering/Startups", full: "Building tools, systems, and futures. My engineering services cover web development on modern platforms and custom frontend work, as well as smart automation and creative problem-solving. I focus on building with intention to create beautiful and performant digital products." }
+        };
 
-            // --- Smart Contact Page Logic ---
-            const showContactPage = (subject, body, fromPageId) => {
-                const contactTitle = document.getElementById('contact-title');
-                const contactSubtitle = document.getElementById('contact-subtitle');
-                const mailtoLink = document.getElementById('contact-mailto-link');
-                const contactBackBtn = document.getElementById('page-contact').querySelector('.back-button');
-
-                contactTitle.textContent = subject;
-                contactSubtitle.textContent = "Click the button below to open your email client. The subject line is pre-filled for your convenience.";
-                
-                const encodedSubject = encodeURIComponent(subject);
-                const encodedBody = encodeURIComponent(body);
-                mailtoLink.href = `mailto:${YOUR_EMAIL}?subject=${encodedSubject}&body=${encodedBody}`;
-
-                showPage('page-contact', fromPageId);
-            };
-
-            // --- Global Click Handler for Navigation and Contact ---
-            document.body.addEventListener('click', (e) => {
-                const button = e.target.closest('a.cta-button, .leaf');
-                if (!button) return;
-
-                e.preventDefault();
-
-                // Main Leaf Navigation
-                if (button.classList.contains('leaf')) {
-                    const pageId = button.getAttribute('href').substring(1);
-                    showPage(pageId);
-                    return;
-                }
-
-                // Page Link Button (like the new superhero one)
-                if (button.dataset.pageLink) {
-                    const currentPage = button.closest('.page-section').id;
-                    showPage(button.dataset.pageLink, currentPage);
-                    return;
-                }
-                
-                // Contact Button Delegation
-                if (button.dataset.contactSubject) {
-                    const subject = button.dataset.contactSubject;
-                    const body = button.dataset.contactBody;
-                    const fromPage = button.closest('.page-section')?.id || 'homepage-container';
-                    showContactPage(subject, body, fromPage);
-                }
-            });
-        });
-
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            if (!particlesContainer) return;
-            const particleCount = 10;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div'); particle.classList.add('particle');
-                const size = Math.random() * 10 + 5; const posX = Math.random() * window.innerWidth;
-                const duration = Math.random() * 15 + 10; const delay = Math.random() * 5;
-                particle.style.width = `${size}px`; particle.style.height = `${size}px`;
-                particle.style.left = `${posX}px`; particle.style.top = `${window.innerHeight + size}px`;
-                particle.style.animationDuration = `${duration}s`; particle.style.animationDelay = `${delay}s`;
-                particlesContainer.appendChild(particle);
-                setTimeout(() => { particle.remove(); }, (duration + delay) * 1000);
+        class Star {
+            constructor() {
+                this.radius3d = Math.random() * (canvas.width * 0.8) + (canvas.width * 0.2);
+                const theta = Math.random() * 2 * Math.PI;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                this.x3d = this.radius3d * Math.sin(phi) * Math.cos(theta);
+                this.y3d = this.radius3d * Math.sin(phi) * Math.sin(theta);
+                this.z3d = this.radius3d * Math.cos(phi);
+                this.originalRadius = Math.random() * 1.5 + 0.5;
+            }
+            project(rotX, rotY) {
+                const cosY = Math.cos(rotY); const sinY = Math.sin(rotY);
+                const cosX = Math.cos(rotX); const sinX = Math.sin(rotX);
+                const tempX = this.x3d * cosY - this.z3d * sinY;
+                const tempZ = this.x3d * sinY + this.z3d * cosY;
+                const tempY = this.y3d * cosX - tempZ * sinX;
+                this.rotatedZ = this.y3d * sinX + tempZ * cosX;
+                this.rotatedX = tempX; this.rotatedY = tempY;
+                const perspective = canvas.width * 0.8;
+                const scale = perspective / (perspective + this.rotatedZ);
+                this.screenX = canvas.width / 2 + this.rotatedX * scale;
+                this.screenY = canvas.height / 2 + this.rotatedY * scale;
+                this.screenRadius = this.originalRadius * scale;
+                this.alpha = (this.rotatedZ + this.radius3d) / (this.radius3d * 2);
+            }
+            draw() {
+                if (this.screenRadius < 0) return;
+                ctx.beginPath();
+                ctx.arc(this.screenX, this.screenY, this.screenRadius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.fill();
             }
         }
 
-        function createBranchesAndLeaves() {
-            const branchesContainer = document.getElementById('branches-container');
-            const leavesContainer = document.getElementById('leaves-container');
-            const starseed = document.getElementById('starseed');
-            if (!starseed) return;
+        class Branch {
+            constructor(x, y, angle, depth) {
+                this.originX = x; this.originY = y;
+                this.angle = angle; this.depth = depth;
+                this.maxLength = Math.random() * 200 + 100 + (5 - depth) * 50;
+                this.currentLength = 0;
+                this.speed = (Math.random() * 1 + 0.5) * 1.5;
+                this.lineWidth = Math.random() * 0.5 + (4 - depth) * 0.3;
+                this.children = [];
+                this.isGrown = false;
+            }
+            grow() {
+                if (this.currentLength < this.maxLength) {
+                    this.currentLength += this.speed;
+                } else if (!this.isGrown) {
+                    this.isGrown = true;
+                    if (this.depth > 0) {
+                        const endX = this.originX + this.currentLength * Math.cos(this.angle);
+                        const endY = this.originY + this.currentLength * Math.sin(this.angle);
+                        const angleOffset = Math.PI / (Math.random() * 4 + 4);
+                        this.children.push(new Branch(endX, endY, this.angle - angleOffset, this.depth - 1));
+                        this.children.push(new Branch(endX, endY, this.angle + angleOffset, this.depth - 1));
+                    }
+                }
+                this.children.forEach(child => child.grow());
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.originX, this.originY);
+                const endX = this.originX + this.currentLength * Math.cos(this.angle);
+                const endY = this.originY + this.currentLength * Math.sin(this.angle);
+                ctx.lineTo(endX, endY);
+                ctx.lineWidth = this.lineWidth;
+                ctx.strokeStyle = GOLD_COLOR;
+                ctx.stroke();
+                this.children.forEach(child => child.draw());
+            }
+        }
 
-            const starseedRect = starseed.getBoundingClientRect();
-            const starseedCenterX = starseedRect.left + starseedRect.width / 2;
-            const starseedCenterY = starseedRect.top + starseedRect.height / 2;
-            const baseDistance = Math.min(window.innerWidth, window.innerHeight) * 0.38;
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
 
-            const leavesDataArray = [
-                { id: 'page-music', icon: 'fa-music', angle: 45, label: 'Music', class: 'music', branchColor: 'rgba(75, 192, 192, 0.7)' },
-                { id: 'page-ai', icon: 'fa-robot', angle: 135, label: 'AI Work', class: 'ai', branchColor: 'rgba(255, 99, 132, 0.7)' },
-                { id: 'page-design', icon: 'fa-paint-brush', angle: 225, label: 'Design & Film', class: 'design', branchColor: 'rgba(54, 162, 235, 0.7)' },
-                { id: 'page-engineering', icon: 'fa-rocket', angle: 315, label: 'Engineering', class: 'engineering', branchColor: 'rgba(153, 102, 255, 0.7)' }
-            ];
+        function checkNodeActivations(hoverOffset = 0) {
+            const originX = canvas.width / 2 + tugOffsetX;
+            const originY = canvas.height / 2 + hoverOffset + tugOffsetY;
 
-            leavesDataArray.forEach(leafData => {
-                const angleRad = (leafData.angle * Math.PI) / 180;
-                const leafX = starseedCenterX + Math.cos(angleRad) * baseDistance;
-                const leafY = starseedCenterY + Math.sin(angleRad) * baseDistance;
-                
-                const branch = document.createElement('div'); branch.classList.add('branch');
-                branch.style.left = '0px'; branch.style.top = '0px'; branch.style.width = '100%'; branch.style.height = '100%';
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.setAttribute('width', '100%'); svg.setAttribute('height', '100%');
-                svg.style.position = 'absolute'; svg.style.left = '0'; svg.style.top = '0'; svg.style.overflow = 'visible';
-                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.classList.add('branch-path');
-                const controlX = starseedCenterX + Math.cos(angleRad) * (baseDistance / 2) + (Math.random() * 40 - 20);
-                const controlY = starseedCenterY + Math.sin(angleRad) * (baseDistance / 2) + (Math.random() * 40 - 20);
-                const pathData = `M ${starseedCenterX} ${starseedCenterY} Q ${controlX} ${controlY}, ${leafX} ${leafY}`;
-                path.setAttribute('d', pathData); path.setAttribute('stroke', leafData.branchColor);
-                svg.appendChild(path); branch.appendChild(svg); branchesContainer.appendChild(branch);
-                
-                const leafElement = document.createElement('a'); leafElement.href = `#${leafData.id}`;
-                leafElement.classList.add('leaf', leafData.class);
-                leafElement.style.left = `${leafX}px`; leafElement.style.top = `${leafY}px`;
-                leafElement.setAttribute('aria-label', leafData.label);
-                
-                const icon = document.createElement('i'); icon.classList.add('fas', leafData.icon);
-                icon.setAttribute('aria-hidden', 'true'); leafElement.appendChild(icon);
-                const tooltip = document.createElement('div'); tooltip.classList.add('tooltip');
-                tooltip.textContent = leafData.label; leafElement.appendChild(tooltip);
-                
-                path.addEventListener('animationend', () => leafElement.classList.add('visible'));
-                leavesContainer.appendChild(leafElement);
+            nodeTargets.forEach(target => {
+                if (!target.isActivated) {
+                    const rect = target.element.getBoundingClientRect();
+                    const nodeX = rect.left + rect.width / 2;
+                    const nodeY = rect.top + rect.height / 2;
+                    const currentDistanceToNode = Math.sqrt(Math.pow(nodeX - originX, 2) + Math.pow(nodeY - originY, 2)) / globalScale;
+
+                    const checkBranches = (branchList) => {
+                        for (const branch of branchList) {
+                            const branchDistFromOrigin = Math.sqrt(Math.pow(branch.originX-originX,2) + Math.pow(branch.originY-originY,2));
+                            if (branch.currentLength + branchDistFromOrigin >= currentDistanceToNode) {
+                                target.isActivated = true;
+                                target.element.classList.add('activated');
+                                return;
+                            }
+                            if (branch.children.length > 0) { checkBranches(branch.children); }
+                        }
+                    };
+                    checkBranches(branches);
+                }
             });
         }
+        
+        function startBranchGrowth() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            branches = [];
+            for (let i = 0; i < BRANCH_COUNT; i++) {
+                const angle = (Math.PI * 2 / BRANCH_COUNT) * i + (Math.random() - 0.5) * 0.1;
+                const originRadius = Math.random() * 50 + 80;
+                const branchOriginX = centerX + originRadius * Math.cos(angle);
+                const branchOriginY = centerY + originRadius * Math.sin(angle);
+                branches.push(new Branch(branchOriginX, branchOriginY, angle, 2));
+            }
+        }
+
+        function init() {
+            stars = []; branches = [];
+            isIntroAnimationDone = false;
+            introStartTime = null; beamStartTime = null;
+            serviceNodes.forEach(node => node.classList.remove('activated'));
+            for (let i = 0; i < STAR_COUNT; i++) { stars.push(new Star()); }
+            
+            nodeTargets = [];
+            serviceNodes.forEach(node => {
+                nodeTargets.push({ element: node, isActivated: false });
+            });
+        }
+
+        function animate(timestamp) {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (!isDragging) {
+                rotationY += 0.0002;
+            }
+
+            stars.forEach(star => {
+                star.project(rotationX, rotationY);
+                star.draw();
+            });
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const easeFactor = 0.05;
+            tugOffsetX += (targetTugOffsetX - tugOffsetX) * easeFactor;
+            tugOffsetY += (targetTugOffsetY - tugOffsetY) * easeFactor;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(globalScale, globalScale);
+            ctx.translate(-centerX, -centerY);
+
+            let currentFigureY = centerY;
+            let currentFigureScale = 0.4;
+            let easedProgress = 0;
+            let hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
+            const dynamicOriginX = centerX + tugOffsetX;
+            const dynamicOriginY = centerY + hoverOffset + tugOffsetY;
+
+            if (!isIntroAnimationDone) {
+                if (introStartTime === null) introStartTime = timestamp;
+                const elapsed = timestamp - introStartTime;
+                const progress = Math.min(elapsed / introDuration, 1);
+                easedProgress = easeInOutCubic(progress);
+
+                const startY = canvas.height + 150;
+                const endY = centerY;
+                currentFigureY = startY - (startY - endY) * easedProgress;
+
+                const startScale = 0.05;
+                const endScale = 0.4;
+                currentFigureScale = startScale + (endScale - startScale) * easedProgress;
+                
+                if (progress === 1) {
+                    isIntroAnimationDone = true;
+                    beamStartTime = timestamp;
+                    startBranchGrowth();
+                }
+            } else {
+                if (beamStartTime !== null) {
+                    const beamElapsed = timestamp - beamStartTime;
+                    const beamProgress = Math.min(beamElapsed / beamDuration, 1);
+                    const currentBeamHeight = canvas.height * beamProgress;
+                    const currentBeamWidth = canvas.width * beamProgress;
+
+                    const vertGradient = ctx.createLinearGradient(centerX, 0, centerX, canvas.height);
+                    vertGradient.addColorStop(0, 'rgba(255, 195, 0, 0)');
+                    vertGradient.addColorStop(0.48, DARK_GOLD_COLOR);
+                    vertGradient.addColorStop(0.52, DARK_GOLD_COLOR);
+                    vertGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
+                    
+                    const horizGradient = ctx.createLinearGradient(0, centerY, canvas.width, centerY);
+                    horizGradient.addColorStop(0, 'rgba(255, 195, 0, 0)');
+                    horizGradient.addColorStop(0.48, DARK_GOLD_COLOR);
+                    horizGradient.addColorStop(0.52, DARK_GOLD_COLOR);
+                    horizGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
+
+                    ctx.save();
+                    ctx.fillStyle = vertGradient;
+                    ctx.shadowColor = GOLD_COLOR;
+                    ctx.shadowBlur = 30;
+                    ctx.fillRect(dynamicOriginX - 3, centerY - currentBeamHeight / 2, 6, currentBeamHeight);
+                    
+                    ctx.fillStyle = horizGradient;
+                    ctx.fillRect(centerX - currentBeamWidth / 2, dynamicOriginY - 3, currentBeamWidth, 6);
+                    ctx.restore();
+                }
+                
+                ctx.save();
+                ctx.shadowColor = GOLD_COLOR;
+                ctx.shadowBlur = 10;
+                branches.forEach(branch => { 
+                    branch.grow();
+                    ctx.beginPath();
+                    ctx.moveTo(dynamicOriginX, dynamicOriginY);
+                    ctx.lineTo(branch.originX, branch.originY);
+                    ctx.lineWidth = branch.lineWidth;
+                    ctx.strokeStyle = GOLD_COLOR;
+                    ctx.stroke();
+                    branch.draw(); 
+                });
+                ctx.restore();
+                checkNodeActivations(hoverOffset);
+            }
+
+            if (!imageFailedToLoad && centralFigure.complete) {
+                const figHeight = canvas.height * currentFigureScale;
+                const scale = figHeight / centralFigure.naturalHeight;
+                const figWidth = centralFigure.naturalWidth * scale;
+                
+                let glowStrength1, glowStrength2;
+                if(isIntroAnimationDone) {
+                    const pulse = (Math.sin(timestamp / 800) + 1) / 2; 
+                    glowStrength1 = 10 + pulse * 15;
+                    glowStrength2 = 25 + pulse * 30;
+                } else {
+                    glowStrength1 = 15 * easedProgress;
+                    glowStrength2 = 35 * easedProgress;
+                }
+                
+                ctx.save();
+                ctx.filter = `drop-shadow(0 0 ${glowStrength1}px ${GOLD_COLOR}) drop-shadow(0 0 ${glowStrength2}px ${DARK_GOLD_COLOR})`;
+                ctx.drawImage(centralFigure, dynamicOriginX - figWidth / 2, currentFigureY - figHeight / 2, figWidth, figHeight);
+                ctx.restore();
+            }
+            
+            ctx.restore();
+
+            requestAnimationFrame(animate);
+        }
+
+        function run() {
+            init();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+
+        window.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.001;
+            const zoomAmount = e.deltaY * -zoomSpeed;
+            const minScale = 0.5;
+            const maxScale = 2.0;
+            globalScale = Math.max(minScale, Math.min(maxScale, globalScale + zoomAmount));
+            nodesContainer.style.transform = `scale(${globalScale})`;
+        }, { passive: false });
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                const rotationSpeed = 0.002;
+                rotationY += deltaX * rotationSpeed;
+                rotationX += deltaY * rotationSpeed;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                
+                const pullX = e.clientX - canvas.width / 2;
+                const pullY = e.clientY - canvas.height / 2;
+                const pullStrength = 0.15;
+                targetTugOffsetX = pullX * pullStrength;
+                targetTugOffsetY = pullY * pullStrength;
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            targetTugOffsetX = 0;
+            targetTugOffsetY = 0;
+        });
+
+
+        const modal = document.getElementById('serviceModal');
+        const modalContent = modal.querySelector('.modal-content');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalClose = document.getElementById('modalClose');
+        const serviceNodes = document.querySelectorAll('.service-node');
+
+        serviceNodes.forEach(node => {
+            const serviceKey = node.dataset.service;
+            const descriptionEl = node.querySelector('.description');
+            
+            descriptionEl.textContent = serviceData[serviceKey].title;
+
+            node.addEventListener('click', () => {
+                if (!node.classList.contains('activated')) return; 
+                const nodeStyle = window.getComputedStyle(node);
+                const nodeBackgroundImage = nodeStyle.getPropertyValue('background-image');
+                
+                modalTitle.textContent = serviceData[serviceKey].title;
+                modalDescription.textContent = serviceData[serviceKey].full;
+
+                modalContent.style.backgroundImage = nodeBackgroundImage;
+                modalContent.style.backgroundClip = 'border-box'; 
+                modalContent.style.borderColor = 'transparent';
+
+                modalTitle.style.background = nodeBackgroundImage.split(', ')[1];
+                modalTitle.style.webkitBackgroundClip = 'text';
+                modalTitle.style.webkitTextFillColor = 'transparent';
+                modalTitle.style.backgroundClip = 'text';
+                
+                modal.classList.add('active');
+            });
+        });
+
+        modalClose.addEventListener('click', () => { modal.classList.remove('active'); });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) { modal.classList.remove('active'); }
+        });
+
     </script>
 </body>
 </html>
+
