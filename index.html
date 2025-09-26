@@ -28,8 +28,8 @@
         canvas:active {
             cursor: grabbing;
         }
-        /* --- Service Nodes --- */
-        .service-nodes-container {
+        /* --- Service Nodes & Sub-Menu --- */
+        .service-nodes-container, .submenu-container {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -191,6 +191,34 @@
             100% { transform: translateY(-50%) scale(1); }
         }
 
+        /* --- New Sub-Menu Styles --- */
+        .submenu-item {
+            position: absolute;
+            color: var(--gold-color);
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--gold-color);
+            cursor: pointer;
+            pointer-events: all;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.4s ease-out;
+        }
+        .submenu-item.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        /* Repositioned sub-menu items */
+        #submenu-creations { top: 30%; left: 50%; transform: translateX(-50%) scale(0.5); }
+        #submenu-offerings { top: 70%; left: 50%; transform: translateX(-50%) scale(0.5); }
+        #submenu-commune { bottom: 2%; left: 50%; transform: translateX(-50%) scale(0.5); }
+        
+        .submenu-item.visible#submenu-creations,
+        .submenu-item.visible#submenu-offerings,
+        .submenu-item.visible#submenu-commune {
+            transform: translateX(-50%) scale(1);
+        }
+
 
         /* --- Modal --- */
         .modal {
@@ -276,6 +304,13 @@
         </div>
     </div>
 
+    <!-- New Sub-Menu HTML -->
+    <div class="submenu-container">
+        <div class="submenu-item" id="submenu-creations">Creations</div>
+        <div class="submenu-item" id="submenu-offerings">Offerings</div>
+        <div class="submenu-item" id="submenu-commune">Commune</div>
+    </div>
+
     <div class="modal" id="serviceModal">
         <div class="modal-content">
             <span class="modal-close" id="modalClose">&times;</span>
@@ -300,6 +335,7 @@
 
         let stars = [];
         let branches = [];
+        let subMenuLines = [];
         const STAR_COUNT = 500; 
         const BRANCH_COUNT = 30;
         const GOLD_COLOR = '#ffc300';
@@ -318,6 +354,12 @@
         let introStartTime = null;
         let beamStartTime = null;
         const beamDuration = 600;
+
+        let isHoveringFigure = false;
+        let targetFigureScale = 1.0;
+        let currentFigureExtraScale = 1.0;
+        let isSubMenuOpen = false;
+        const subMenuItems = Array.from(document.querySelectorAll('.submenu-item'));
 
         const serviceData = {
             music: { title: "Music", full: "My musical services are designed to give your project a polished, studio-quality sound. I offer custom theme song creation, a bespoke service for brands and individuals seeking a unique sonic signature. I also provide professionally engineered vocal presets for Bandlab, helping artists achieve a professional sound with ease." },
@@ -361,15 +403,30 @@
         }
 
         class Branch {
-            constructor(x, y, angle, depth) {
-                this.originX = x; this.originY = y;
-                this.angle = angle; this.depth = depth;
+            constructor(staticX, staticY, angle, depth) {
+                this.staticX = staticX;
+                this.staticY = staticY;
+                this.originX = staticX;
+                this.originY = staticY;
+                this.angle = angle;
+                this.depth = depth;
                 this.maxLength = Math.random() * 200 + 100 + (5 - depth) * 50;
                 this.currentLength = 0;
                 this.speed = (Math.random() * 1 + 0.5) * 1.5;
                 this.lineWidth = Math.random() * 0.5 + (4 - depth) * 0.3;
                 this.children = [];
                 this.isGrown = false;
+
+                this.oscillationRadius = Math.random() * 15 + 5;
+                this.oscillationSpeed = (Math.random() * 0.5 + 0.5) * 0.001;
+                this.oscillationOffset = Math.random() * Math.PI * 2;
+            }
+            update(timestamp) {
+                if (this.depth === 2) { 
+                    const angle = timestamp * this.oscillationSpeed + this.oscillationOffset;
+                    this.originX = this.staticX + Math.cos(angle) * this.oscillationRadius;
+                    this.originY = this.staticY + Math.sin(angle) * this.oscillationRadius;
+                }
             }
             grow() {
                 if (this.currentLength < this.maxLength) {
@@ -377,8 +434,8 @@
                 } else if (!this.isGrown) {
                     this.isGrown = true;
                     if (this.depth > 0) {
-                        const endX = this.originX + this.currentLength * Math.cos(this.angle);
-                        const endY = this.originY + this.currentLength * Math.sin(this.angle);
+                        const endX = this.staticX + this.maxLength * Math.cos(this.angle);
+                        const endY = this.staticY + this.maxLength * Math.sin(this.angle);
                         const angleOffset = Math.PI / (Math.random() * 4 + 4);
                         this.children.push(new Branch(endX, endY, this.angle - angleOffset, this.depth - 1));
                         this.children.push(new Branch(endX, endY, this.angle + angleOffset, this.depth - 1));
@@ -386,16 +443,18 @@
                 }
                 this.children.forEach(child => child.grow());
             }
-            draw() {
+            draw(startX, startY) {
+                const endX = startX + this.currentLength * Math.cos(this.angle);
+                const endY = startY + this.currentLength * Math.sin(this.angle);
+
                 ctx.beginPath();
-                ctx.moveTo(this.originX, this.originY);
-                const endX = this.originX + this.currentLength * Math.cos(this.angle);
-                const endY = this.originY + this.currentLength * Math.sin(this.angle);
+                ctx.moveTo(startX, startY);
                 ctx.lineTo(endX, endY);
                 ctx.lineWidth = this.lineWidth;
                 ctx.strokeStyle = GOLD_COLOR;
                 ctx.stroke();
-                this.children.forEach(child => child.draw());
+
+                this.children.forEach(child => child.draw(endX, endY));
             }
         }
 
@@ -475,6 +534,7 @@
             const easeFactor = 0.05;
             tugOffsetX += (targetTugOffsetX - tugOffsetX) * easeFactor;
             tugOffsetY += (targetTugOffsetY - tugOffsetY) * easeFactor;
+            currentFigureExtraScale += (targetFigureScale - currentFigureExtraScale) * easeFactor;
 
             ctx.save();
             ctx.translate(centerX, centerY);
@@ -484,7 +544,7 @@
             let currentFigureY = centerY;
             let currentFigureScale = 0.4;
             let easedProgress = 0;
-            let hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
+            const hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
             const dynamicOriginX = centerX + tugOffsetX;
             const dynamicOriginY = centerY + hoverOffset + tugOffsetY;
 
@@ -541,6 +601,7 @@
                 ctx.shadowColor = GOLD_COLOR;
                 ctx.shadowBlur = 10;
                 branches.forEach(branch => { 
+                    branch.update(timestamp);
                     branch.grow();
                     ctx.beginPath();
                     ctx.moveTo(dynamicOriginX, dynamicOriginY);
@@ -548,22 +609,41 @@
                     ctx.lineWidth = branch.lineWidth;
                     ctx.strokeStyle = GOLD_COLOR;
                     ctx.stroke();
-                    branch.draw(); 
+                    branch.draw(branch.originX, branch.originY); 
                 });
+                
+                if (isSubMenuOpen) {
+                    subMenuItems.forEach(item => {
+                        const rect = item.getBoundingClientRect();
+                        const itemX = rect.left + rect.width / 2;
+                        const itemY = rect.top + rect.height / 2;
+                        ctx.beginPath();
+                        ctx.moveTo(dynamicOriginX, dynamicOriginY);
+                        ctx.lineTo(itemX, itemY);
+                        ctx.stroke();
+                    });
+                }
                 ctx.restore();
                 checkNodeActivations(hoverOffset);
             }
 
             if (!imageFailedToLoad && centralFigure.complete) {
-                const figHeight = canvas.height * currentFigureScale;
+                const finalScale = currentFigureScale * currentFigureExtraScale;
+                const figHeight = canvas.height * finalScale;
                 const scale = figHeight / centralFigure.naturalHeight;
                 const figWidth = centralFigure.naturalWidth * scale;
                 
+                const finalFigureCenterY = isIntroAnimationDone ? dynamicOriginY : currentFigureY;
+
                 let glowStrength1, glowStrength2;
                 if(isIntroAnimationDone) {
                     const pulse = (Math.sin(timestamp / 800) + 1) / 2; 
                     glowStrength1 = 10 + pulse * 15;
                     glowStrength2 = 25 + pulse * 30;
+                    if(isHoveringFigure) {
+                        glowStrength1 = 30;
+                        glowStrength2 = 70;
+                    }
                 } else {
                     glowStrength1 = 15 * easedProgress;
                     glowStrength2 = 35 * easedProgress;
@@ -571,7 +651,7 @@
                 
                 ctx.save();
                 ctx.filter = `drop-shadow(0 0 ${glowStrength1}px ${GOLD_COLOR}) drop-shadow(0 0 ${glowStrength2}px ${DARK_GOLD_COLOR})`;
-                ctx.drawImage(centralFigure, dynamicOriginX - figWidth / 2, currentFigureY - figHeight / 2, figWidth, figHeight);
+                ctx.drawImage(centralFigure, dynamicOriginX - figWidth / 2, finalFigureCenterY - figHeight / 2, figWidth, figHeight);
                 ctx.restore();
             }
             
@@ -606,6 +686,7 @@
             lastMouseX = e.clientX;
             lastMouseY = e.clientY;
         });
+
         window.addEventListener('mousemove', (e) => {
             if (isDragging) {
                 const deltaX = e.clientX - lastMouseX;
@@ -622,11 +703,35 @@
                 targetTugOffsetX = pullX * pullStrength;
                 targetTugOffsetY = pullY * pullStrength;
             }
+
+            const figRect = {
+                x: (canvas.width / 2 + tugOffsetX) - (centralFigure.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigure.naturalHeight)/2,
+                y: (canvas.height / 2 + (isIntroAnimationDone ? Math.sin(Date.now() / 1500) * 10 : 0) + tugOffsetY) - (canvas.height * 0.4 * currentFigureExtraScale)/2,
+                width: centralFigure.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigure.naturalHeight,
+                height: canvas.height * 0.4 * currentFigureExtraScale
+            };
+            
+            if (e.clientX > figRect.x && e.clientX < figRect.x + figRect.width &&
+                e.clientY > figRect.y && e.clientY < figRect.y + figRect.height) {
+                isHoveringFigure = true;
+                targetFigureScale = 1.05;
+            } else {
+                isHoveringFigure = false;
+                targetFigureScale = 1.0;
+            }
         });
+
         window.addEventListener('mouseup', () => {
             isDragging = false;
             targetTugOffsetX = 0;
             targetTugOffsetY = 0;
+        });
+        
+        canvas.addEventListener('click', (e) => {
+            if(isHoveringFigure) {
+                isSubMenuOpen = !isSubMenuOpen;
+                subMenuItems.forEach(item => item.classList.toggle('visible', isSubMenuOpen));
+            }
         });
 
 
@@ -672,4 +777,3 @@
     </script>
 </body>
 </html>
-
