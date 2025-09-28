@@ -28,8 +28,9 @@
         canvas:active {
             cursor: grabbing;
         }
-        /* --- Service Nodes & Sub-Menu --- */
-        .service-nodes-container, .submenu-container {
+
+        /* --- Sub-Menu Styles --- */
+        .submenu-container {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -39,159 +40,6 @@
             pointer-events: none; 
             transition: transform 0.2s ease-out; 
         }
-        .service-node {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 3px solid;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
-            transform: scale(0.2);
-            opacity: 0;
-            cursor: default;
-            pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        /* Glow effect using a blurred pseudo-element */
-        .service-node::after {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            width: calc(100% + 10px);
-            height: calc(100% + 10px);
-            border-radius: 50%;
-            filter: blur(10px);
-            z-index: -1;
-            opacity: 0.7;
-            transition: opacity 0.3s ease, filter 0.3s ease;
-        }
-        /* Larger hover area */
-        .service-node::before {
-            content: '';
-            position: absolute;
-            top: -30px;
-            left: -30px;
-            width: 110px;
-            height: 110px;
-            background: transparent;
-            border-radius: 50%;
-        }
-
-        .service-node.activated {
-            transform: scale(1);
-            opacity: 1;
-            cursor: pointer;
-            pointer-events: all;
-            animation: pulse 2s infinite ease-in-out;
-        }
-        .service-node .icon {
-            font-size: 22px;
-            transition: all 0.3s ease;
-        }
-        .service-node .description {
-            position: absolute;
-            bottom: -45px;
-            width: 220px;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            font-size: 14px;
-            font-weight: bold;
-            text-shadow: 0 0 8px, 0 0 12px;
-            pointer-events: none; 
-        }
-        .service-node.activated:hover {
-            transform: scale(1.1);
-            animation-play-state: paused;
-        }
-        .service-node.activated:hover .icon {
-            transform: scale(1.1);
-        }
-        .service-node.activated:hover .description {
-            opacity: 1;
-        }
-
-        .service-node.activated:hover::after {
-            opacity: 1;
-            filter: blur(15px);
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-
-        /* --- Unique Node Colors & Gradients --- */
-        .service-node {
-            border-color: transparent;
-            background-origin: border-box;
-            background-clip: content-box, border-box;
-        }
-
-        #node-music {
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #39ff14, #ff00ff);
-        }
-        #node-music::after {
-            background: linear-gradient(45deg, #39ff14, #ff00ff);
-        }
-        #node-music .icon, #node-music .description { color: #39ff14; }
-
-        #node-ai {
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #8A2BE2, #00BFFF);
-        }
-        #node-ai::after {
-            background: linear-gradient(45deg, #8A2BE2, #00BFFF);
-        }
-        #node-ai .icon, #node-ai .description { color: #00BFFF; }
-
-        #node-design {
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #FF4500, #FF0000);
-        }
-        #node-design::after {
-            background: linear-gradient(45deg, #FF4500, #FF0000);
-        }
-        #node-design .icon, #node-design .description { color: #FF4500; }
-
-        #node-engineering {
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), linear-gradient(45deg, #0000FF, #FFFF00);
-        }
-        #node-engineering::after {
-            background: linear-gradient(45deg, #0000FF, #FFFF00);
-        }
-        #node-engineering .icon, #node-engineering .description { color: #FFFF00; }
-
-
-        /* Repositioning the nodes */
-        #node-ai { top: 15%; left: 50%; transform: translateX(-50%) scale(0.2); }
-        #node-music { bottom: 10%; left: 50%; transform: translateX(-50%) scale(0.2); }
-        #node-design { top: 50%; right: 20%; transform: translateY(-50%) scale(0.2); }
-        #node-engineering { top: 50%; left: 20%; transform: translateY(-50%) scale(0.2); }
-        
-        .service-node.activated#node-ai, .service-node.activated#node-music { animation-name: pulse-x; }
-        .service-node.activated#node-design, .service-node.activated#node-engineering { animation-name: pulse-y; }
-        
-        .service-node.activated#node-ai:hover, .service-node.activated#node-music:hover { transform: translateX(-50%) scale(1.1); animation-name: none; }
-        .service-node.activated#node-design:hover, .service-node.activated#node-engineering:hover { transform: translateY(-50%) scale(1.1); animation-name: none; }
-        
-        @keyframes pulse-x {
-            0% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.05); }
-            100% { transform: translateX(-50%) scale(1); }
-        }
-        @keyframes pulse-y {
-            0% { transform: translateY(-50%) scale(1); }
-            50% { transform: translateY(-50%) scale(1.05); }
-            100% { transform: translateY(-50%) scale(1); }
-        }
-
-        /* --- New Sub-Menu Styles --- */
         .submenu-item {
             position: absolute;
             color: var(--gold-color);
@@ -208,7 +56,6 @@
             opacity: 1;
             transform: scale(1);
         }
-        /* Repositioned sub-menu items */
         #submenu-creations { top: 30%; left: 50%; transform: translateX(-50%) scale(0.5); }
         #submenu-offerings { top: 70%; left: 50%; transform: translateX(-50%) scale(0.5); }
         #submenu-commune { bottom: 2%; left: 50%; transform: translateX(-50%) scale(0.5); }
@@ -269,42 +116,13 @@
             color: #fff; cursor: pointer; transition: color 0.2s;
         }
         .modal-close:hover { color: #ffc300; }
-
-        @media (max-width: 768px) {
-            .service-node { width: 40px; height: 40px; }
-            .service-node.activated .icon { font-size: 18px; }
-            #node-ai { top: 10%; }
-            #node-music { bottom: 5%; }
-            #node-design { top: 50%; right: 5%; }
-            #node-engineering { top: 50%; left: 5%; }
-            .service-node .description { font-size: 12px; bottom: -35px; width: 150px; }
-        }
-
+        
     </style>
 </head>
 <body>
     <canvas id="cosmicCanvas"></canvas>
 
-    <div class="service-nodes-container" id="nodesContainer">
-        <div class="service-node" id="node-music" data-service="music">
-            <div class="icon"><i class="fas fa-music"></i></div>
-            <div class="description"></div>
-        </div>
-        <div class="service-node" id="node-ai" data-service="ai">
-            <div class="icon"><i class="fas fa-robot"></i></div>
-            <div class="description"></div>
-        </div>
-        <div class="service-node" id="node-design" data-service="design">
-            <div class="icon"><i class="fas fa-paint-brush"></i></div>
-            <div class="description"></div>
-        </div>
-        <div class="service-node" id="node-engineering" data-service="engineering">
-            <div class="icon"><i class="fas fa-cogs"></i></div>
-            <div class="description"></div>
-        </div>
-    </div>
-
-    <!-- New Sub-Menu HTML -->
+    <!-- Sub-Menu is the only HTML overlay left -->
     <div class="submenu-container">
         <div class="submenu-item" id="submenu-creations">Creations</div>
         <div class="submenu-item" id="submenu-offerings">Offerings</div>
@@ -326,23 +144,22 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const centralFigure = new Image();
+        const centralFigureImage = new Image();
         let imageFailedToLoad = false;
-        centralFigure.crossOrigin = "Anonymous"; 
-        centralFigure.onload = () => { run(); };
-        centralFigure.onerror = () => { imageFailedToLoad = true; run(); };
-        centralFigure.src = 'https://i.imgur.com/6lzWabU.png';
+        centralFigureImage.crossOrigin = "Anonymous"; 
+        centralFigureImage.onload = () => { run(); };
+        centralFigureImage.onerror = () => { imageFailedToLoad = true; run(); };
+        centralFigureImage.src = 'https://i.imgur.com/6lzWabU.png';
 
         let stars = [];
         let branches = [];
-        let subMenuLines = [];
+        let renderables = [];
+        let nodes = []; // Fixed: Added to global scope
         const STAR_COUNT = 500; 
         const BRANCH_COUNT = 30;
         const GOLD_COLOR = '#ffc300';
         const DARK_GOLD_COLOR = '#ff9400';
-        let nodeTargets = [];
         let globalScale = 1.0;
-        const nodesContainer = document.getElementById('nodesContainer');
         let isDragging = false;
         let lastMouseX = 0; let lastMouseY = 0;
         let rotationX = 0; let rotationY = 0;
@@ -401,22 +218,115 @@
                 ctx.fill();
             }
         }
+        
+        class Node extends Star {
+            constructor(serviceKey, theta, phi, colors, icon) {
+                super();
+                this.baseRadius3d = canvas.width * 0.35;
+                this.theta = theta;
+                this.phi = phi;
+                this.originalRadius = 25;
+                this.serviceKey = serviceKey;
+                this.colors = colors;
+                this.icon = icon;
+                this.isActivated = false;
+                this.isHovered = false;
+                this.activationProgress = 0;
+            }
+            project(rotX, rotY, zoomScale) {
+                // Smart Zoom: nodes pull closer when zooming in
+                this.radius3d = this.baseRadius3d / (zoomScale * 0.6 + 0.4);
+                this.x3d = this.radius3d * Math.sin(this.phi) * Math.cos(this.theta);
+                this.y3d = this.radius3d * Math.sin(this.phi) * Math.sin(this.theta);
+                this.z3d = this.radius3d * Math.cos(this.phi);
+                super.project(rotX, rotY);
+            }
+            draw(timestamp) {
+                if (this.activationProgress < 1 && this.isActivated) this.activationProgress += 0.05;
+                const currentScale = easeInOutCubic(this.activationProgress);
+                if (!this.isActivated || this.screenRadius < 0) return;
+                const pulse = this.isHovered ? 1.1 : 1 + Math.sin(timestamp / 500) * 0.05;
+                const finalRadius = this.screenRadius * currentScale * pulse;
+
+                const glowGradient = ctx.createRadialGradient(this.screenX, this.screenY, 0, this.screenX, this.screenY, finalRadius * 1.5);
+                glowGradient.addColorStop(0, this.colors[0] + '80');
+                glowGradient.addColorStop(0.7, this.colors[1] + '50');
+                glowGradient.addColorStop(1, this.colors[1] + '00');
+                ctx.fillStyle = glowGradient;
+                ctx.beginPath();
+                ctx.arc(this.screenX, this.screenY, finalRadius * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                const bodyGradient = ctx.createRadialGradient(this.screenX - finalRadius * 0.2, this.screenY - finalRadius * 0.2, finalRadius * 0.1, this.screenX, this.screenY, finalRadius);
+                bodyGradient.addColorStop(0, this.colors[0]);
+                bodyGradient.addColorStop(1, this.colors[1]);
+                ctx.fillStyle = bodyGradient;
+                ctx.beginPath();
+                ctx.arc(this.screenX, this.screenY, finalRadius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                const iconSize = finalRadius * 0.8;
+                ctx.font = `900 ${iconSize}px "Font Awesome 5 Free"`;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.icon, this.screenX, this.screenY);
+
+                if (this.isHovered) {
+                    const titleSize = finalRadius * 0.5;
+                    ctx.font = `bold ${titleSize}px Segoe UI`;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.shadowColor = this.colors[0];
+                    ctx.shadowBlur = 10;
+                    ctx.fillText(serviceData[this.serviceKey].title, this.screenX, this.screenY + finalRadius * 1.5);
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+        
+        class Figure {
+             constructor() {
+                this.rotatedZ = 0;
+            }
+            draw(timestamp, dynamicOriginX, dynamicOriginY, currentFigureScale, introProgress) {
+                if (!imageFailedToLoad && centralFigureImage.complete) {
+                    const finalScale = currentFigureScale * currentFigureExtraScale;
+                    const figHeight = canvas.height * finalScale;
+                    const scale = figHeight / centralFigureImage.naturalHeight;
+                    const figWidth = centralFigureImage.naturalWidth * scale;
+                    let glowStrength1, glowStrength2;
+                    if(isIntroAnimationDone) {
+                        const pulse = (Math.sin(timestamp / 800) + 1) / 2; 
+                        glowStrength1 = 10 + pulse * 15;
+                        glowStrength2 = 25 + pulse * 30;
+                        if(isHoveringFigure) {
+                            glowStrength1 = 30;
+                            glowStrength2 = 70;
+                        }
+                    } else {
+                        glowStrength1 = 15 * introProgress;
+                        glowStrength2 = 35 * introProgress;
+                    }
+                    ctx.save();
+                    ctx.filter = `drop-shadow(0 0 ${glowStrength1}px ${GOLD_COLOR}) drop-shadow(0 0 ${glowStrength2}px ${DARK_GOLD_COLOR})`;
+                    ctx.drawImage(centralFigureImage, dynamicOriginX - figWidth / 2, dynamicOriginY - figHeight / 2, figWidth, figHeight);
+                    ctx.restore();
+                }
+            }
+        }
+
 
         class Branch {
             constructor(staticX, staticY, angle, depth) {
-                this.staticX = staticX;
-                this.staticY = staticY;
-                this.originX = staticX;
-                this.originY = staticY;
-                this.angle = angle;
-                this.depth = depth;
+                this.staticX = staticX; this.staticY = staticY;
+                this.originX = staticX; this.originY = staticY;
+                this.angle = angle; this.depth = depth;
                 this.maxLength = Math.random() * 200 + 100 + (5 - depth) * 50;
                 this.currentLength = 0;
                 this.speed = (Math.random() * 1 + 0.5) * 1.5;
                 this.lineWidth = Math.random() * 0.5 + (4 - depth) * 0.3;
                 this.children = [];
                 this.isGrown = false;
-
                 this.oscillationRadius = Math.random() * 15 + 5;
                 this.oscillationSpeed = (Math.random() * 0.5 + 0.5) * 0.001;
                 this.oscillationOffset = Math.random() * Math.PI * 2;
@@ -446,14 +356,12 @@
             draw(startX, startY) {
                 const endX = startX + this.currentLength * Math.cos(this.angle);
                 const endY = startY + this.currentLength * Math.sin(this.angle);
-
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(endX, endY);
                 ctx.lineWidth = this.lineWidth;
                 ctx.strokeStyle = GOLD_COLOR;
                 ctx.stroke();
-
                 this.children.forEach(child => child.draw(endX, endY));
             }
         }
@@ -466,19 +374,14 @@
             const originX = canvas.width / 2 + tugOffsetX;
             const originY = canvas.height / 2 + hoverOffset + tugOffsetY;
 
-            nodeTargets.forEach(target => {
-                if (!target.isActivated) {
-                    const rect = target.element.getBoundingClientRect();
-                    const nodeX = rect.left + rect.width / 2;
-                    const nodeY = rect.top + rect.height / 2;
-                    const currentDistanceToNode = Math.sqrt(Math.pow(nodeX - originX, 2) + Math.pow(nodeY - originY, 2)) / globalScale;
-
+            nodes.forEach(node => {
+                if (!node.isActivated) {
+                    const nodeDist3D = Math.sqrt(node.x3d**2 + node.y3d**2 + node.z3d**2);
                     const checkBranches = (branchList) => {
                         for (const branch of branchList) {
                             const branchDistFromOrigin = Math.sqrt(Math.pow(branch.originX-originX,2) + Math.pow(branch.originY-originY,2));
-                            if (branch.currentLength + branchDistFromOrigin >= currentDistanceToNode) {
-                                target.isActivated = true;
-                                target.element.classList.add('activated');
+                            if (branch.currentLength + branchDistFromOrigin >= nodeDist3D) {
+                                node.isActivated = true;
                                 return;
                             }
                             if (branch.children.length > 0) { checkBranches(branch.children); }
@@ -503,30 +406,28 @@
         }
 
         function init() {
-            stars = []; branches = [];
+            stars = []; branches = []; renderables = [];
             isIntroAnimationDone = false;
             introStartTime = null; beamStartTime = null;
-            serviceNodes.forEach(node => node.classList.remove('activated'));
             for (let i = 0; i < STAR_COUNT; i++) { stars.push(new Star()); }
             
-            nodeTargets = [];
-            serviceNodes.forEach(node => {
-                nodeTargets.push({ element: node, isActivated: false });
-            });
+            nodes = [ // Fixed: Assign to global `nodes`
+                new Node('ai', Math.PI * 1.5, Math.PI * 0.5, ['#8A2BE2', '#00BFFF'], '\uf544'),
+                new Node('music', Math.PI * 0.5, Math.PI * 0.5, ['#39ff14', '#ff00ff'], '\uf001'),
+                new Node('design', 0, Math.PI * 0.5, ['#FF4500', '#FF0000'], '\uf1fc'),
+                new Node('engineering', Math.PI, Math.PI * 0.5, ['#0000FF', '#FFFF00'], '\uf085')
+            ];
+            const figure = new Figure();
+            renderables = [...nodes, figure];
         }
 
         function animate(timestamp) {
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            if (!isDragging) {
-                rotationY += 0.0002;
-            }
+            if (!isDragging) rotationY += 0.0002;
 
-            stars.forEach(star => {
-                star.project(rotationX, rotationY);
-                star.draw();
-            });
+            stars.forEach(star => { star.project(rotationX, rotationY); star.draw(); });
             
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
@@ -535,63 +436,59 @@
             tugOffsetX += (targetTugOffsetX - tugOffsetX) * easeFactor;
             tugOffsetY += (targetTugOffsetY - tugOffsetY) * easeFactor;
             currentFigureExtraScale += (targetFigureScale - currentFigureExtraScale) * easeFactor;
-
-            ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.scale(globalScale, globalScale);
-            ctx.translate(-centerX, -centerY);
+            
+            const hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
+            const dynamicOriginX = centerX + tugOffsetX;
+            const dynamicOriginY = centerY + hoverOffset + tugOffsetY;
 
             let currentFigureY = centerY;
             let currentFigureScale = 0.4;
             let easedProgress = 0;
-            const hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
-            const dynamicOriginX = centerX + tugOffsetX;
-            const dynamicOriginY = centerY + hoverOffset + tugOffsetY;
 
             if (!isIntroAnimationDone) {
                 if (introStartTime === null) introStartTime = timestamp;
                 const elapsed = timestamp - introStartTime;
                 const progress = Math.min(elapsed / introDuration, 1);
                 easedProgress = easeInOutCubic(progress);
-
                 const startY = canvas.height + 150;
                 const endY = centerY;
                 currentFigureY = startY - (startY - endY) * easedProgress;
-
                 const startScale = 0.05;
                 const endScale = 0.4;
                 currentFigureScale = startScale + (endScale - startScale) * easedProgress;
-                
                 if (progress === 1) {
                     isIntroAnimationDone = true;
                     beamStartTime = timestamp;
                     startBranchGrowth();
                 }
-            } else {
+            } 
+            
+            // Project all 3D objects
+            renderables.forEach(r => {
+                if(r.project) r.project(rotationX, rotationY, globalScale);
+            });
+            
+            // Sort renderables by depth
+            renderables.sort((a,b) => b.rotatedZ - a.rotatedZ);
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.scale(globalScale, globalScale);
+            ctx.translate(-centerX, -centerY);
+            
+            if (isIntroAnimationDone) {
                 if (beamStartTime !== null) {
                     const beamElapsed = timestamp - beamStartTime;
                     const beamProgress = Math.min(beamElapsed / beamDuration, 1);
                     const currentBeamHeight = canvas.height * beamProgress;
                     const currentBeamWidth = canvas.width * beamProgress;
-
                     const vertGradient = ctx.createLinearGradient(centerX, 0, centerX, canvas.height);
-                    vertGradient.addColorStop(0, 'rgba(255, 195, 0, 0)');
-                    vertGradient.addColorStop(0.48, DARK_GOLD_COLOR);
-                    vertGradient.addColorStop(0.52, DARK_GOLD_COLOR);
-                    vertGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
-                    
+                    vertGradient.addColorStop(0, 'rgba(255, 195, 0, 0)'); vertGradient.addColorStop(0.48, DARK_GOLD_COLOR); vertGradient.addColorStop(0.52, DARK_GOLD_COLOR); vertGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
                     const horizGradient = ctx.createLinearGradient(0, centerY, canvas.width, centerY);
-                    horizGradient.addColorStop(0, 'rgba(255, 195, 0, 0)');
-                    horizGradient.addColorStop(0.48, DARK_GOLD_COLOR);
-                    horizGradient.addColorStop(0.52, DARK_GOLD_COLOR);
-                    horizGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
-
+                    horizGradient.addColorStop(0, 'rgba(255, 195, 0, 0)'); horizGradient.addColorStop(0.48, DARK_GOLD_COLOR); horizGradient.addColorStop(0.52, DARK_GOLD_COLOR); horizGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
                     ctx.save();
-                    ctx.fillStyle = vertGradient;
-                    ctx.shadowColor = GOLD_COLOR;
-                    ctx.shadowBlur = 30;
+                    ctx.fillStyle = vertGradient; ctx.shadowColor = GOLD_COLOR; ctx.shadowBlur = 30;
                     ctx.fillRect(dynamicOriginX - 3, centerY - currentBeamHeight / 2, 6, currentBeamHeight);
-                    
                     ctx.fillStyle = horizGradient;
                     ctx.fillRect(centerX - currentBeamWidth / 2, dynamicOriginY - 3, currentBeamWidth, 6);
                     ctx.restore();
@@ -626,36 +523,25 @@
                 ctx.restore();
                 checkNodeActivations(hoverOffset);
             }
-
-            if (!imageFailedToLoad && centralFigure.complete) {
-                const finalScale = currentFigureScale * currentFigureExtraScale;
-                const figHeight = canvas.height * finalScale;
-                const scale = figHeight / centralFigure.naturalHeight;
-                const figWidth = centralFigure.naturalWidth * scale;
-                
-                const finalFigureCenterY = isIntroAnimationDone ? dynamicOriginY : currentFigureY;
-
-                let glowStrength1, glowStrength2;
-                if(isIntroAnimationDone) {
-                    const pulse = (Math.sin(timestamp / 800) + 1) / 2; 
-                    glowStrength1 = 10 + pulse * 15;
-                    glowStrength2 = 25 + pulse * 30;
-                    if(isHoveringFigure) {
-                        glowStrength1 = 30;
-                        glowStrength2 = 70;
-                    }
-                } else {
-                    glowStrength1 = 15 * easedProgress;
-                    glowStrength2 = 35 * easedProgress;
-                }
-                
-                ctx.save();
-                ctx.filter = `drop-shadow(0 0 ${glowStrength1}px ${GOLD_COLOR}) drop-shadow(0 0 ${glowStrength2}px ${DARK_GOLD_COLOR})`;
-                ctx.drawImage(centralFigure, dynamicOriginX - figWidth / 2, finalFigureCenterY - figHeight / 2, figWidth, figHeight);
-                ctx.restore();
-            }
             
-            ctx.restore();
+            // Draw sorted 3D objects
+            renderables.forEach(r => {
+                if (r instanceof Figure) {
+                     r.draw(timestamp, dynamicOriginX, isIntroAnimationDone ? dynamicOriginY : currentFigureY, currentFigureScale, easedProgress);
+                } else {
+                    // Nodes are drawn without global scale applied, so we need to draw them outside the scaled context
+                }
+            });
+
+            ctx.restore(); // Restore from global scale
+
+            // Draw nodes on top of scaled context
+            renderables.forEach(r => {
+                if (r instanceof Node) {
+                    r.draw(timestamp);
+                }
+            })
+
 
             requestAnimationFrame(animate);
         }
@@ -678,7 +564,6 @@
             const minScale = 0.5;
             const maxScale = 2.0;
             globalScale = Math.max(minScale, Math.min(maxScale, globalScale + zoomAmount));
-            nodesContainer.style.transform = `scale(${globalScale})`;
         }, { passive: false });
 
         canvas.addEventListener('mousedown', (e) => {
@@ -688,6 +573,19 @@
         });
 
         window.addEventListener('mousemove', (e) => {
+            let handledByNode = false;
+            renderables.forEach(r => {
+                if (r instanceof Node) {
+                    const dist = Math.sqrt((e.clientX - r.screenX)**2 + (e.clientY - r.screenY)**2);
+                    if (r.isActivated && dist < r.screenRadius * 1.2) {
+                        r.isHovered = true;
+                        handledByNode = true;
+                    } else {
+                        r.isHovered = false;
+                    }
+                }
+            });
+
             if (isDragging) {
                 const deltaX = e.clientX - lastMouseX;
                 const deltaY = e.clientY - lastMouseY;
@@ -696,7 +594,6 @@
                 rotationX += deltaY * rotationSpeed;
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
-                
                 const pullX = e.clientX - canvas.width / 2;
                 const pullY = e.clientY - canvas.height / 2;
                 const pullStrength = 0.15;
@@ -705,13 +602,13 @@
             }
 
             const figRect = {
-                x: (canvas.width / 2 + tugOffsetX) - (centralFigure.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigure.naturalHeight)/2,
+                x: (canvas.width / 2 + tugOffsetX) - (centralFigureImage.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigureImage.naturalHeight)/2,
                 y: (canvas.height / 2 + (isIntroAnimationDone ? Math.sin(Date.now() / 1500) * 10 : 0) + tugOffsetY) - (canvas.height * 0.4 * currentFigureExtraScale)/2,
-                width: centralFigure.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigure.naturalHeight,
+                width: centralFigureImage.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigureImage.naturalHeight,
                 height: canvas.height * 0.4 * currentFigureExtraScale
             };
             
-            if (e.clientX > figRect.x && e.clientX < figRect.x + figRect.width &&
+            if (!handledByNode && e.clientX > figRect.x && e.clientX < figRect.x + figRect.width &&
                 e.clientY > figRect.y && e.clientY < figRect.y + figRect.height) {
                 isHoveringFigure = true;
                 targetFigureScale = 1.05;
@@ -719,6 +616,7 @@
                 isHoveringFigure = false;
                 targetFigureScale = 1.0;
             }
+            canvas.style.cursor = isHoveringFigure || handledByNode ? 'pointer' : (isDragging ? 'grabbing' : 'grab');
         });
 
         window.addEventListener('mouseup', () => {
@@ -732,43 +630,34 @@
                 isSubMenuOpen = !isSubMenuOpen;
                 subMenuItems.forEach(item => item.classList.toggle('visible', isSubMenuOpen));
             }
+            renderables.forEach(r => {
+                if (r instanceof Node && r.isHovered) {
+                     const modal = document.getElementById('serviceModal');
+                    const modalContent = modal.querySelector('.modal-content');
+                    const modalTitle = document.getElementById('modalTitle');
+                    const modalDescription = document.getElementById('modalDescription');
+                    
+                    modalTitle.textContent = serviceData[r.serviceKey].title;
+                    modalDescription.textContent = serviceData[r.serviceKey].full;
+
+                    const gradient = `linear-gradient(45deg, ${r.colors[0]}, ${r.colors[1]})`;
+                    modalContent.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), ${gradient}`;
+                    modalContent.style.backgroundClip = 'border-box'; 
+                    modalContent.style.borderColor = 'transparent';
+
+                    modalTitle.style.background = gradient;
+                    modalTitle.style.webkitBackgroundClip = 'text';
+                    modalTitle.style.webkitTextFillColor = 'transparent';
+                    modalTitle.style.backgroundClip = 'text';
+                    
+                    modal.classList.add('active');
+                }
+            });
         });
 
 
         const modal = document.getElementById('serviceModal');
-        const modalContent = modal.querySelector('.modal-content');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
         const modalClose = document.getElementById('modalClose');
-        const serviceNodes = document.querySelectorAll('.service-node');
-
-        serviceNodes.forEach(node => {
-            const serviceKey = node.dataset.service;
-            const descriptionEl = node.querySelector('.description');
-            
-            descriptionEl.textContent = serviceData[serviceKey].title;
-
-            node.addEventListener('click', () => {
-                if (!node.classList.contains('activated')) return; 
-                const nodeStyle = window.getComputedStyle(node);
-                const nodeBackgroundImage = nodeStyle.getPropertyValue('background-image');
-                
-                modalTitle.textContent = serviceData[serviceKey].title;
-                modalDescription.textContent = serviceData[serviceKey].full;
-
-                modalContent.style.backgroundImage = nodeBackgroundImage;
-                modalContent.style.backgroundClip = 'border-box'; 
-                modalContent.style.borderColor = 'transparent';
-
-                modalTitle.style.background = nodeBackgroundImage.split(', ')[1];
-                modalTitle.style.webkitBackgroundClip = 'text';
-                modalTitle.style.webkitTextFillColor = 'transparent';
-                modalTitle.style.backgroundClip = 'text';
-                
-                modal.classList.add('active');
-            });
-        });
-
         modalClose.addEventListener('click', () => { modal.classList.remove('active'); });
         modal.addEventListener('click', (e) => {
             if (e.target === modal) { modal.classList.remove('active'); }
