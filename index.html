@@ -1,668 +1,1422 @@
+ok uk what i just did... i found the old iteration where everything was correct... and you had just added in the nacy blue background of space from the original black version, and u fixed the node 3d spatial thing perfectly. below is the exact code i want you either replace the current iteration with, or identify why that one works, and how u can continue to implement/add new features that will make sure these struggle features stay functional consistently:
+
+
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Cosmic Energy Canvas</title>
+
     <!-- Add Font Awesome for icons -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <style>
+
         :root {
+
             --gold-color: #ffc300;
+
         }
+
+
 
         body { 
+
             margin: 0; 
+
             overflow: hidden; 
+
             background-color: #000; 
+
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        canvas { 
-            display: block; 
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-            cursor: grab;
-        }
-        canvas:active {
-            cursor: grabbing;
+
         }
 
-        /* --- Sub-Menu Styles --- */
-        .submenu-container {
+        canvas { 
+
+            display: block; 
+
             position: absolute;
-            width: 100%;
-            height: 100%;
+
             top: 0;
+
             left: 0;
-            z-index: 10;
-            pointer-events: none; 
-            transition: transform 0.2s ease-out; 
+
+            z-index: 1;
+
+            cursor: grab;
+
         }
-        .submenu-item {
+
+        canvas:active {
+
+            cursor: grabbing;
+
+        }
+
+
+
+        /* --- Sub-Menu Styles --- */
+
+        .submenu-container {
+
             position: absolute;
+
+            width: 100%;
+
+            height: 100%;
+
+            top: 0;
+
+            left: 0;
+
+            z-index: 10;
+
+            pointer-events: none; 
+
+            transition: transform 0.2s ease-out; 
+
+        }
+
+        .submenu-item {
+
+            position: absolute;
+
             color: var(--gold-color);
+
             font-size: 16px;
+
             font-weight: bold;
+
             text-shadow: 0 0 10px var(--gold-color);
+
             cursor: pointer;
+
             pointer-events: all;
+
             opacity: 0;
+
             transform: scale(0.5);
+
             transition: all 0.4s ease-out;
+
         }
+
         .submenu-item.visible {
+
             opacity: 1;
+
             transform: scale(1);
+
         }
+
         #submenu-creations { top: 30%; left: 50%; transform: translateX(-50%) scale(0.5); }
+
         #submenu-offerings { top: 70%; left: 50%; transform: translateX(-50%) scale(0.5); }
+
         #submenu-commune { bottom: 2%; left: 50%; transform: translateX(-50%) scale(0.5); }
+
         
+
         .submenu-item.visible#submenu-creations,
+
         .submenu-item.visible#submenu-offerings,
+
         .submenu-item.visible#submenu-commune {
+
             transform: translateX(-50%) scale(1);
+
         }
+
+
+
 
 
         /* --- Modal --- */
+
         .modal {
+
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+
             background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center;
+
             z-index: 100; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+
         }
+
         .modal.active { opacity: 1; visibility: visible; }
+
         .modal-content {
+
             background: #0a0a0a;
+
             border: 3px solid var(--gold-color);
+
             width: 450px;
+
             height: 450px;
+
             max-width: 90vw;
+
             max-height: 90vw;
+
             border-radius: 50%;
+
             padding: 40px;
+
             box-sizing: border-box;
+
             color: #eee;
+
             box-shadow: 0 0 30px var(--gold-color);
+
             position: relative;
+
             transform: scale(0.9);
+
             transition: all 0.3s ease;
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: center;
+
             align-items: center;
+
             text-align: center;
+
         }
+
         .modal.active .modal-content { transform: scale(1); }
+
         .modal-content h2 { 
+
             margin-top: 0; 
+
             margin-bottom: 15px;
+
             color: var(--gold-color); 
+
             transition: color 0.3s ease; 
+
         }
+
         .modal-content p {
+
             margin: 0;
+
             font-size: 15px;
+
             line-height: 1.5;
+
         }
+
         .modal-close {
+
             position: absolute;
+
             top: 20%;
+
             right: 20%;
+
             transform: translate(50%, -50%);
+
             font-size: 28px;
+
             color: #fff; cursor: pointer; transition: color 0.2s;
+
         }
+
         .modal-close:hover { color: #ffc300; }
+
         
+
     </style>
+
 </head>
+
 <body>
+
     <canvas id="cosmicCanvas"></canvas>
 
+
+
     <!-- Sub-Menu is the only HTML overlay left -->
+
     <div class="submenu-container">
+
         <div class="submenu-item" id="submenu-creations">Creations</div>
+
         <div class="submenu-item" id="submenu-offerings">Offerings</div>
+
         <div class="submenu-item" id="submenu-commune">Commune</div>
+
     </div>
 
+
+
     <div class="modal" id="serviceModal">
+
         <div class="modal-content">
+
             <span class="modal-close" id="modalClose">&times;</span>
+
             <h2 id="modalTitle"></h2>
+
             <p id="modalDescription"></p>
+
         </div>
+
     </div>
+
+
+
 
 
     <script>
+
         const canvas = document.getElementById('cosmicCanvas');
+
         const ctx = canvas.getContext('2d');
+
         canvas.width = window.innerWidth;
+
         canvas.height = window.innerHeight;
 
+
+
         const centralFigureImage = new Image();
+
         let imageFailedToLoad = false;
+
         centralFigureImage.crossOrigin = "Anonymous"; 
+
         centralFigureImage.onload = () => { run(); };
+
         centralFigureImage.onerror = () => { imageFailedToLoad = true; run(); };
+
         centralFigureImage.src = 'https://i.imgur.com/6lzWabU.png';
 
+
+
         let stars = [];
+
         let branches = [];
+
         let renderables = [];
-        let nodes = []; // Fixed: Added to global scope
+
+        let nodes = [];
+
+        let nebulaCanvas; // For the new nebula background
+
         const STAR_COUNT = 500; 
+
         const BRANCH_COUNT = 30;
+
         const GOLD_COLOR = '#ffc300';
+
         const DARK_GOLD_COLOR = '#ff9400';
+
         let globalScale = 1.0;
+
         let isDragging = false;
+
         let lastMouseX = 0; let lastMouseY = 0;
+
         let rotationX = 0; let rotationY = 0;
+
         let tugOffsetX = 0; let tugOffsetY = 0;
+
         let targetTugOffsetX = 0; let targetTugOffsetY = 0;
 
+
+
         let isIntroAnimationDone = false;
+
         const introDuration = 2500; 
+
         let introStartTime = null;
+
         let beamStartTime = null;
+
         const beamDuration = 600;
 
+
+
         let isHoveringFigure = false;
+
         let targetFigureScale = 1.0;
+
         let currentFigureExtraScale = 1.0;
+
         let isSubMenuOpen = false;
+
         const subMenuItems = Array.from(document.querySelectorAll('.submenu-item'));
 
+
+
         const serviceData = {
+
             music: { title: "Music", full: "My musical services are designed to give your project a polished, studio-quality sound. I offer custom theme song creation, a bespoke service for brands and individuals seeking a unique sonic signature. I also provide professionally engineered vocal presets for Bandlab, helping artists achieve a professional sound with ease." },
+
             ai: { title: "AI", full: "Harness the power of artificial intelligence. I specialize in building and configuring custom GPTs trained on your specific data and needs. From automating repetitive tasks to creating powerful new creative tools, I design AI solutions that harmonize technology and humanity." },
+
             design: { title: "Art/Digital Media", full: "Storytelling through image, motion, and experience. I offer creative services for artists and businesses, including the creation of compelling AI-powered video ads and mesmerizing music visualizers for your tracks. Let's bring your vision to life." },
+
             engineering: { title: "Engineering/Startups", full: "Building tools, systems, and futures. My engineering services cover web development on modern platforms and custom frontend work, as well as smart automation and creative problem-solving. I focus on building with intention to create beautiful and performant digital products." }
+
         };
 
-        class Star {
-            constructor() {
-                this.radius3d = Math.random() * (canvas.width * 0.8) + (canvas.width * 0.2);
-                const theta = Math.random() * 2 * Math.PI;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                this.x3d = this.radius3d * Math.sin(phi) * Math.cos(theta);
-                this.y3d = this.radius3d * Math.sin(phi) * Math.sin(theta);
-                this.z3d = this.radius3d * Math.cos(phi);
-                this.originalRadius = Math.random() * 1.5 + 0.5;
+
+
+        // --- New Nebula Generation ---
+
+        function createNebula() {
+
+            const size = 1024;
+
+            const offscreenCanvas = document.createElement('canvas');
+
+            offscreenCanvas.width = size;
+
+            offscreenCanvas.height = size;
+
+            const offscreenCtx = offscreenCanvas.getContext('2d');
+
+            
+
+            const colors = ['#4a1c54', '#1f195e', '#133b6d'];
+
+            offscreenCtx.fillStyle = '#000';
+
+            offscreenCtx.fillRect(0, 0, size, size);
+
+
+
+            for (let i = 0; i < 50; i++) {
+
+                const x = Math.random() * size;
+
+                const y = Math.random() * size;
+
+                const radius = Math.random() * size / 3 + size / 5;
+
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+
+
+                const grad = offscreenCtx.createRadialGradient(x, y, 0, x, y, radius);
+
+                grad.addColorStop(0, color + '40'); // low alpha
+
+                grad.addColorStop(1, color + '00');
+
+
+
+                offscreenCtx.fillStyle = grad;
+
+                offscreenCtx.fillRect(0, 0, size, size);
+
             }
-            project(rotX, rotY) {
-                const cosY = Math.cos(rotY); const sinY = Math.sin(rotY);
-                const cosX = Math.cos(rotX); const sinX = Math.sin(rotX);
-                const tempX = this.x3d * cosY - this.z3d * sinY;
-                const tempZ = this.x3d * sinY + this.z3d * cosY;
-                const tempY = this.y3d * cosX - tempZ * sinX;
-                this.rotatedZ = this.y3d * sinX + tempZ * cosX;
-                this.rotatedX = tempX; this.rotatedY = tempY;
-                const perspective = canvas.width * 0.8;
-                const scale = perspective / (perspective + this.rotatedZ);
-                this.screenX = canvas.width / 2 + this.rotatedX * scale;
-                this.screenY = canvas.height / 2 + this.rotatedY * scale;
-                this.screenRadius = this.originalRadius * scale;
-                this.alpha = (this.rotatedZ + this.radius3d) / (this.radius3d * 2);
-            }
-            draw() {
-                if (this.screenRadius < 0) return;
-                ctx.beginPath();
-                ctx.arc(this.screenX, this.screenY, this.screenRadius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
-                ctx.fill();
-            }
+
+            return offscreenCanvas;
+
         }
+
+
+
+
+
+        class Star {
+
+            constructor() {
+
+                this.radius3d = Math.random() * (canvas.width * 0.8) + (canvas.width * 0.2);
+
+                const theta = Math.random() * 2 * Math.PI;
+
+                const phi = Math.acos((Math.random() * 2) - 1);
+
+                this.x3d = this.radius3d * Math.sin(phi) * Math.cos(theta);
+
+                this.y3d = this.radius3d * Math.sin(phi) * Math.sin(theta);
+
+                this.z3d = this.radius3d * Math.cos(phi);
+
+                this.originalRadius = Math.random() * 1.5 + 0.5;
+
+            }
+
+            project(rotX, rotY) {
+
+                const cosY = Math.cos(rotY); const sinY = Math.sin(rotY);
+
+                const cosX = Math.cos(rotX); const sinX = Math.sin(rotX);
+
+                const tempX = this.x3d * cosY - this.z3d * sinY;
+
+                const tempZ = this.x3d * sinY + this.z3d * cosY;
+
+                const tempY = this.y3d * cosX - tempZ * sinX;
+
+                this.rotatedZ = this.y3d * sinX + tempZ * cosX;
+
+                this.rotatedX = tempX; this.rotatedY = tempY;
+
+                const perspective = canvas.width * 0.8;
+
+                const scale = perspective / (perspective + this.rotatedZ);
+
+                this.screenX = canvas.width / 2 + this.rotatedX * scale;
+
+                this.screenY = canvas.height / 2 + this.rotatedY * scale;
+
+                this.screenRadius = this.originalRadius * scale;
+
+                this.alpha = (this.rotatedZ + this.radius3d) / (this.radius3d * 2);
+
+            }
+
+            draw() {
+
+                if (this.screenRadius < 0) return;
+
+                ctx.beginPath();
+
+                ctx.arc(this.screenX, this.screenY, this.screenRadius, 0, Math.PI * 2);
+
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+
+                ctx.fill();
+
+            }
+
+        }
+
         
+
         class Node extends Star {
+
             constructor(serviceKey, theta, phi, colors, icon) {
+
                 super();
+
                 this.baseRadius3d = canvas.width * 0.35;
+
                 this.theta = theta;
+
                 this.phi = phi;
-                this.originalRadius = 25;
+
+                this.originalRadius = 35;
+
                 this.serviceKey = serviceKey;
+
                 this.colors = colors;
+
                 this.icon = icon;
+
                 this.isActivated = false;
+
                 this.isHovered = false;
+
                 this.activationProgress = 0;
+
             }
+
             project(rotX, rotY, zoomScale) {
-                // Smart Zoom: nodes pull closer when zooming in
-                this.radius3d = this.baseRadius3d / (zoomScale * 0.6 + 0.4);
+
+                const zoomFactor = 1 / (zoomScale * 0.5 + 0.5);
+
+                this.radius3d = this.baseRadius3d * zoomFactor;
+
                 this.x3d = this.radius3d * Math.sin(this.phi) * Math.cos(this.theta);
+
                 this.y3d = this.radius3d * Math.sin(this.phi) * Math.sin(this.theta);
+
                 this.z3d = this.radius3d * Math.cos(this.phi);
+
                 super.project(rotX, rotY);
+
             }
+
             draw(timestamp) {
+
                 if (this.activationProgress < 1 && this.isActivated) this.activationProgress += 0.05;
+
                 const currentScale = easeInOutCubic(this.activationProgress);
+
                 if (!this.isActivated || this.screenRadius < 0) return;
+
                 const pulse = this.isHovered ? 1.1 : 1 + Math.sin(timestamp / 500) * 0.05;
+
                 const finalRadius = this.screenRadius * currentScale * pulse;
 
-                const glowGradient = ctx.createRadialGradient(this.screenX, this.screenY, 0, this.screenX, this.screenY, finalRadius * 1.5);
-                glowGradient.addColorStop(0, this.colors[0] + '80');
-                glowGradient.addColorStop(0.7, this.colors[1] + '50');
+
+
+                const glowGradient = ctx.createRadialGradient(this.screenX, this.screenY, finalRadius * 0.8, this.screenX, this.screenY, finalRadius * 1.2);
+
+                glowGradient.addColorStop(0, this.colors[0] + '40');
+
                 glowGradient.addColorStop(1, this.colors[1] + '00');
+
                 ctx.fillStyle = glowGradient;
+
                 ctx.beginPath();
-                ctx.arc(this.screenX, this.screenY, finalRadius * 1.5, 0, Math.PI * 2);
+
+                ctx.arc(this.screenX, this.screenY, finalRadius * 1.2, 0, Math.PI * 2);
+
                 ctx.fill();
+
+
 
                 const bodyGradient = ctx.createRadialGradient(this.screenX - finalRadius * 0.2, this.screenY - finalRadius * 0.2, finalRadius * 0.1, this.screenX, this.screenY, finalRadius);
+
                 bodyGradient.addColorStop(0, this.colors[0]);
+
                 bodyGradient.addColorStop(1, this.colors[1]);
+
                 ctx.fillStyle = bodyGradient;
+
                 ctx.beginPath();
+
                 ctx.arc(this.screenX, this.screenY, finalRadius, 0, Math.PI * 2);
+
                 ctx.fill();
+
                 
+
+                const highlightGradient = ctx.createRadialGradient(this.screenX - finalRadius * 0.4, this.screenY - finalRadius * 0.4, 0, this.screenX, this.screenY, finalRadius);
+
+                highlightGradient.addColorStop(0, 'rgba(255,255,255,0.4)');
+
+                highlightGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
+
+                ctx.fillStyle = highlightGradient;
+
+                ctx.fill();
+
+                
+
                 const iconSize = finalRadius * 0.8;
+
                 ctx.font = `900 ${iconSize}px "Font Awesome 5 Free"`;
+
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+
                 ctx.textAlign = 'center';
+
                 ctx.textBaseline = 'middle';
+
                 ctx.fillText(this.icon, this.screenX, this.screenY);
 
+
+
                 if (this.isHovered) {
+
                     const titleSize = finalRadius * 0.5;
+
                     ctx.font = `bold ${titleSize}px Segoe UI`;
+
                     ctx.fillStyle = '#ffffff';
+
                     ctx.shadowColor = this.colors[0];
+
                     ctx.shadowBlur = 10;
+
                     ctx.fillText(serviceData[this.serviceKey].title, this.screenX, this.screenY + finalRadius * 1.5);
+
                     ctx.shadowBlur = 0;
+
                 }
+
             }
+
         }
+
         
+
         class Figure {
+
              constructor() {
+
                 this.rotatedZ = 0;
+
             }
+
             draw(timestamp, dynamicOriginX, dynamicOriginY, currentFigureScale, introProgress) {
+
                 if (!imageFailedToLoad && centralFigureImage.complete) {
+
                     const finalScale = currentFigureScale * currentFigureExtraScale;
+
                     const figHeight = canvas.height * finalScale;
+
                     const scale = figHeight / centralFigureImage.naturalHeight;
+
                     const figWidth = centralFigureImage.naturalWidth * scale;
+
                     let glowStrength1, glowStrength2;
+
                     if(isIntroAnimationDone) {
+
                         const pulse = (Math.sin(timestamp / 800) + 1) / 2; 
+
                         glowStrength1 = 10 + pulse * 15;
+
                         glowStrength2 = 25 + pulse * 30;
+
                         if(isHoveringFigure) {
+
                             glowStrength1 = 30;
+
                             glowStrength2 = 70;
+
                         }
+
                     } else {
+
                         glowStrength1 = 15 * introProgress;
+
                         glowStrength2 = 35 * introProgress;
+
                     }
+
                     ctx.save();
+
                     ctx.filter = `drop-shadow(0 0 ${glowStrength1}px ${GOLD_COLOR}) drop-shadow(0 0 ${glowStrength2}px ${DARK_GOLD_COLOR})`;
+
                     ctx.drawImage(centralFigureImage, dynamicOriginX - figWidth / 2, dynamicOriginY - figHeight / 2, figWidth, figHeight);
+
                     ctx.restore();
+
                 }
+
             }
+
         }
+
+
+
 
 
         class Branch {
+
             constructor(staticX, staticY, angle, depth) {
+
                 this.staticX = staticX; this.staticY = staticY;
+
                 this.originX = staticX; this.originY = staticY;
+
                 this.angle = angle; this.depth = depth;
+
                 this.maxLength = Math.random() * 200 + 100 + (5 - depth) * 50;
+
                 this.currentLength = 0;
+
                 this.speed = (Math.random() * 1 + 0.5) * 1.5;
+
                 this.lineWidth = Math.random() * 0.5 + (4 - depth) * 0.3;
+
                 this.children = [];
+
                 this.isGrown = false;
+
                 this.oscillationRadius = Math.random() * 15 + 5;
+
                 this.oscillationSpeed = (Math.random() * 0.5 + 0.5) * 0.001;
+
                 this.oscillationOffset = Math.random() * Math.PI * 2;
+
             }
+
             update(timestamp) {
+
                 if (this.depth === 2) { 
+
                     const angle = timestamp * this.oscillationSpeed + this.oscillationOffset;
+
                     this.originX = this.staticX + Math.cos(angle) * this.oscillationRadius;
+
                     this.originY = this.staticY + Math.sin(angle) * this.oscillationRadius;
+
                 }
+
             }
+
             grow() {
+
                 if (this.currentLength < this.maxLength) {
+
                     this.currentLength += this.speed;
+
                 } else if (!this.isGrown) {
+
                     this.isGrown = true;
+
                     if (this.depth > 0) {
+
                         const endX = this.staticX + this.maxLength * Math.cos(this.angle);
+
                         const endY = this.staticY + this.maxLength * Math.sin(this.angle);
+
                         const angleOffset = Math.PI / (Math.random() * 4 + 4);
+
                         this.children.push(new Branch(endX, endY, this.angle - angleOffset, this.depth - 1));
+
                         this.children.push(new Branch(endX, endY, this.angle + angleOffset, this.depth - 1));
+
                     }
+
                 }
+
                 this.children.forEach(child => child.grow());
+
             }
+
             draw(startX, startY) {
+
                 const endX = startX + this.currentLength * Math.cos(this.angle);
+
                 const endY = startY + this.currentLength * Math.sin(this.angle);
+
                 ctx.beginPath();
+
                 ctx.moveTo(startX, startY);
+
                 ctx.lineTo(endX, endY);
+
                 ctx.lineWidth = this.lineWidth;
+
                 ctx.strokeStyle = GOLD_COLOR;
+
                 ctx.stroke();
+
                 this.children.forEach(child => child.draw(endX, endY));
+
             }
+
         }
+
+
 
         function easeInOutCubic(t) {
+
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
         }
+
+
 
         function checkNodeActivations(hoverOffset = 0) {
+
             const originX = canvas.width / 2 + tugOffsetX;
+
             const originY = canvas.height / 2 + hoverOffset + tugOffsetY;
 
-            nodes.forEach(node => {
-                if (!node.isActivated) {
-                    const nodeDist3D = Math.sqrt(node.x3d**2 + node.y3d**2 + node.z3d**2);
+
+
+            renderables.forEach(r => {
+
+                if (r instanceof Node && !r.isActivated) {
+
+                    const nodeDist3D = Math.sqrt(r.x3d**2 + r.y3d**2 + r.z3d**2);
+
                     const checkBranches = (branchList) => {
+
                         for (const branch of branchList) {
+
                             const branchDistFromOrigin = Math.sqrt(Math.pow(branch.originX-originX,2) + Math.pow(branch.originY-originY,2));
+
                             if (branch.currentLength + branchDistFromOrigin >= nodeDist3D) {
-                                node.isActivated = true;
+
+                                r.isActivated = true;
+
                                 return;
+
                             }
+
                             if (branch.children.length > 0) { checkBranches(branch.children); }
+
                         }
+
                     };
+
                     checkBranches(branches);
+
                 }
+
             });
+
         }
+
         
+
         function startBranchGrowth() {
+
             const centerX = canvas.width / 2;
+
             const centerY = canvas.height / 2;
+
             branches = [];
+
             for (let i = 0; i < BRANCH_COUNT; i++) {
+
                 const angle = (Math.PI * 2 / BRANCH_COUNT) * i + (Math.random() - 0.5) * 0.1;
+
                 const originRadius = Math.random() * 50 + 80;
+
                 const branchOriginX = centerX + originRadius * Math.cos(angle);
+
                 const branchOriginY = centerY + originRadius * Math.sin(angle);
+
                 branches.push(new Branch(branchOriginX, branchOriginY, angle, 2));
+
             }
+
         }
+
+
 
         function init() {
+
             stars = []; branches = []; renderables = [];
+
             isIntroAnimationDone = false;
+
             introStartTime = null; beamStartTime = null;
-            for (let i = 0; i < STAR_COUNT; i++) { stars.push(new Star()); }
+
             
-            nodes = [ // Fixed: Assign to global `nodes`
+
+            nebulaCanvas = createNebula();
+
+            
+
+            for (let i = 0; i < STAR_COUNT; i++) { stars.push(new Star()); }
+
+            
+
+            nodes = [
+
                 new Node('ai', Math.PI * 1.5, Math.PI * 0.5, ['#8A2BE2', '#00BFFF'], '\uf544'),
+
                 new Node('music', Math.PI * 0.5, Math.PI * 0.5, ['#39ff14', '#ff00ff'], '\uf001'),
+
                 new Node('design', 0, Math.PI * 0.5, ['#FF4500', '#FF0000'], '\uf1fc'),
+
                 new Node('engineering', Math.PI, Math.PI * 0.5, ['#0000FF', '#FFFF00'], '\uf085')
+
             ];
+
             const figure = new Figure();
+
             renderables = [...nodes, figure];
+
         }
 
+
+
         function animate(timestamp) {
+
             ctx.fillStyle = '#000';
+
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            if (!isDragging) rotationY += 0.0002;
 
-            stars.forEach(star => { star.project(rotationX, rotationY); star.draw(); });
             
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
 
-            const easeFactor = 0.05;
-            tugOffsetX += (targetTugOffsetX - tugOffsetX) * easeFactor;
-            tugOffsetY += (targetTugOffsetY - tugOffsetY) * easeFactor;
-            currentFigureExtraScale += (targetFigureScale - currentFigureExtraScale) * easeFactor;
-            
-            const hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
-            const dynamicOriginX = centerX + tugOffsetX;
-            const dynamicOriginY = centerY + hoverOffset + tugOffsetY;
+            if (!isDragging) {
 
-            let currentFigureY = centerY;
-            let currentFigureScale = 0.4;
-            let easedProgress = 0;
+                rotationY += 0.0002;
 
-            if (!isIntroAnimationDone) {
-                if (introStartTime === null) introStartTime = timestamp;
-                const elapsed = timestamp - introStartTime;
-                const progress = Math.min(elapsed / introDuration, 1);
-                easedProgress = easeInOutCubic(progress);
-                const startY = canvas.height + 150;
-                const endY = centerY;
-                currentFigureY = startY - (startY - endY) * easedProgress;
-                const startScale = 0.05;
-                const endScale = 0.4;
-                currentFigureScale = startScale + (endScale - startScale) * easedProgress;
-                if (progress === 1) {
-                    isIntroAnimationDone = true;
-                    beamStartTime = timestamp;
-                    startBranchGrowth();
-                }
-            } 
+            }
+
             
-            // Project all 3D objects
-            renderables.forEach(r => {
-                if(r.project) r.project(rotationX, rotationY, globalScale);
-            });
-            
-            // Sort renderables by depth
-            renderables.sort((a,b) => b.rotatedZ - a.rotatedZ);
+
+            // Draw Nebula
 
             ctx.save();
-            ctx.translate(centerX, centerY);
-            ctx.scale(globalScale, globalScale);
-            ctx.translate(-centerX, -centerY);
+
+            ctx.globalAlpha = 0.5;
+
+            const nebulaRotation = timestamp * 0.00002;
+
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            ctx.rotate(rotationY / 5 + nebulaRotation);
+
+            ctx.drawImage(nebulaCanvas, -nebulaCanvas.width, -nebulaCanvas.height, nebulaCanvas.width * 2, nebulaCanvas.height * 2);
+
+            ctx.restore();
+
+
+
+
+
+            stars.forEach(star => { star.project(rotationX, rotationY); star.draw(); });
+
             
-            if (isIntroAnimationDone) {
-                if (beamStartTime !== null) {
-                    const beamElapsed = timestamp - beamStartTime;
-                    const beamProgress = Math.min(beamElapsed / beamDuration, 1);
-                    const currentBeamHeight = canvas.height * beamProgress;
-                    const currentBeamWidth = canvas.width * beamProgress;
-                    const vertGradient = ctx.createLinearGradient(centerX, 0, centerX, canvas.height);
-                    vertGradient.addColorStop(0, 'rgba(255, 195, 0, 0)'); vertGradient.addColorStop(0.48, DARK_GOLD_COLOR); vertGradient.addColorStop(0.52, DARK_GOLD_COLOR); vertGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
-                    const horizGradient = ctx.createLinearGradient(0, centerY, canvas.width, centerY);
-                    horizGradient.addColorStop(0, 'rgba(255, 195, 0, 0)'); horizGradient.addColorStop(0.48, DARK_GOLD_COLOR); horizGradient.addColorStop(0.52, DARK_GOLD_COLOR); horizGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
-                    ctx.save();
-                    ctx.fillStyle = vertGradient; ctx.shadowColor = GOLD_COLOR; ctx.shadowBlur = 30;
-                    ctx.fillRect(dynamicOriginX - 3, centerY - currentBeamHeight / 2, 6, currentBeamHeight);
-                    ctx.fillStyle = horizGradient;
-                    ctx.fillRect(centerX - currentBeamWidth / 2, dynamicOriginY - 3, currentBeamWidth, 6);
-                    ctx.restore();
-                }
-                
-                ctx.save();
-                ctx.shadowColor = GOLD_COLOR;
-                ctx.shadowBlur = 10;
-                branches.forEach(branch => { 
-                    branch.update(timestamp);
-                    branch.grow();
-                    ctx.beginPath();
-                    ctx.moveTo(dynamicOriginX, dynamicOriginY);
-                    ctx.lineTo(branch.originX, branch.originY);
-                    ctx.lineWidth = branch.lineWidth;
-                    ctx.strokeStyle = GOLD_COLOR;
-                    ctx.stroke();
-                    branch.draw(branch.originX, branch.originY); 
-                });
-                
-                if (isSubMenuOpen) {
-                    subMenuItems.forEach(item => {
-                        const rect = item.getBoundingClientRect();
-                        const itemX = rect.left + rect.width / 2;
-                        const itemY = rect.top + rect.height / 2;
-                        ctx.beginPath();
-                        ctx.moveTo(dynamicOriginX, dynamicOriginY);
-                        ctx.lineTo(itemX, itemY);
-                        ctx.stroke();
-                    });
-                }
-                ctx.restore();
-                checkNodeActivations(hoverOffset);
-            }
+
+            const centerX = canvas.width / 2;
+
+            const centerY = canvas.height / 2;
+
+
+
+            const easeFactor = 0.05;
+
+            tugOffsetX += (targetTugOffsetX - tugOffsetX) * easeFactor;
+
+            tugOffsetY += (targetTugOffsetY - tugOffsetY) * easeFactor;
+
+            currentFigureExtraScale += (targetFigureScale - currentFigureExtraScale) * easeFactor;
+
             
-            // Draw sorted 3D objects
+
+            const hoverOffset = isIntroAnimationDone ? Math.sin(timestamp / 1500) * 10 : 0;
+
+            const dynamicOriginX = centerX + tugOffsetX;
+
+            const dynamicOriginY = centerY + hoverOffset + tugOffsetY;
+
+
+
+            let currentFigureY = centerY;
+
+            let currentFigureScale = 0.4;
+
+            let easedProgress = 0;
+
+
+
+            if (!isIntroAnimationDone) {
+
+                if (introStartTime === null) introStartTime = timestamp;
+
+                const elapsed = timestamp - introStartTime;
+
+                const progress = Math.min(elapsed / introDuration, 1);
+
+                easedProgress = easeInOutCubic(progress);
+
+                const startY = canvas.height + 150;
+
+                const endY = centerY;
+
+                currentFigureY = startY - (startY - endY) * easedProgress;
+
+                const startScale = 0.05;
+
+                const endScale = 0.4;
+
+                currentFigureScale = startScale + (endScale - startScale) * easedProgress;
+
+                if (progress === 1) {
+
+                    isIntroAnimationDone = true;
+
+                    beamStartTime = timestamp;
+
+                    startBranchGrowth();
+
+                }
+
+            } 
+
+            
+
             renderables.forEach(r => {
-                if (r instanceof Figure) {
-                     r.draw(timestamp, dynamicOriginX, isIntroAnimationDone ? dynamicOriginY : currentFigureY, currentFigureScale, easedProgress);
-                } else {
-                    // Nodes are drawn without global scale applied, so we need to draw them outside the scaled context
-                }
+
+                if(r.project) r.project(rotationX, rotationY, globalScale);
+
             });
 
-            ctx.restore(); // Restore from global scale
+            
 
-            // Draw nodes on top of scaled context
-            renderables.forEach(r => {
-                if (r instanceof Node) {
-                    r.draw(timestamp);
+            renderables.sort((a,b) => b.rotatedZ - a.rotatedZ);
+
+
+
+            ctx.save();
+
+            ctx.translate(centerX, centerY);
+
+            ctx.scale(globalScale, globalScale);
+
+            ctx.translate(-centerX, -centerY);
+
+            
+
+            if (isIntroAnimationDone) {
+
+                if (beamStartTime !== null) {
+
+                    const beamElapsed = timestamp - beamStartTime;
+
+                    const beamProgress = Math.min(beamElapsed / beamDuration, 1);
+
+                    const currentBeamHeight = canvas.height * beamProgress;
+
+                    const currentBeamWidth = canvas.width * beamProgress;
+
+                    const vertGradient = ctx.createLinearGradient(centerX, 0, centerX, canvas.height);
+
+                    vertGradient.addColorStop(0, 'rgba(255, 195, 0, 0)'); vertGradient.addColorStop(0.48, DARK_GOLD_COLOR); vertGradient.addColorStop(0.52, DARK_GOLD_COLOR); vertGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
+
+                    const horizGradient = ctx.createLinearGradient(0, centerY, canvas.width, centerY);
+
+                    horizGradient.addColorStop(0, 'rgba(255, 195, 0, 0)'); horizGradient.addColorStop(0.48, DARK_GOLD_COLOR); horizGradient.addColorStop(0.52, DARK_GOLD_COLOR); horizGradient.addColorStop(1, 'rgba(255, 195, 0, 0)');
+
+                    ctx.save();
+
+                    ctx.fillStyle = vertGradient; ctx.shadowColor = GOLD_COLOR; ctx.shadowBlur = 30;
+
+                    ctx.fillRect(dynamicOriginX - 3, centerY - currentBeamHeight / 2, 6, currentBeamHeight);
+
+                    ctx.fillStyle = horizGradient;
+
+                    ctx.fillRect(centerX - currentBeamWidth / 2, dynamicOriginY - 3, currentBeamWidth, 6);
+
+                    ctx.restore();
+
                 }
+
+                
+
+                ctx.save();
+
+                ctx.shadowColor = GOLD_COLOR;
+
+                ctx.shadowBlur = 10;
+
+                branches.forEach(branch => { 
+
+                    branch.update(timestamp);
+
+                    branch.grow();
+
+                    ctx.beginPath();
+
+                    ctx.moveTo(dynamicOriginX, dynamicOriginY);
+
+                    ctx.lineTo(branch.originX, branch.originY);
+
+                    ctx.lineWidth = branch.lineWidth;
+
+                    ctx.strokeStyle = GOLD_COLOR;
+
+                    ctx.stroke();
+
+                    branch.draw(branch.originX, branch.originY); 
+
+                });
+
+                
+
+                if (isSubMenuOpen) {
+
+                    subMenuItems.forEach(item => {
+
+                        const rect = item.getBoundingClientRect();
+
+                        const itemX = (rect.left + rect.width / 2 - centerX) / globalScale + centerX;
+
+                        const itemY = (rect.top + rect.height / 2 - centerY) / globalScale + centerY;
+
+                        ctx.beginPath();
+
+                        ctx.moveTo(dynamicOriginX, dynamicOriginY);
+
+                        ctx.lineTo(itemX, itemY);
+
+                        ctx.stroke();
+
+                    });
+
+                }
+
+                ctx.restore();
+
+                checkNodeActivations(hoverOffset);
+
+            }
+
+            
+
+            ctx.restore(); 
+
+
+
+            renderables.forEach(r => {
+
+                if (r instanceof Figure) {
+
+                     r.draw(timestamp, dynamicOriginX, isIntroAnimationDone ? dynamicOriginY : currentFigureY, currentFigureScale, easedProgress);
+
+                } else if (r instanceof Node) {
+
+                    r.draw(timestamp);
+
+                }
+
             })
 
 
+
+
+
             requestAnimationFrame(animate);
+
         }
+
+
 
         function run() {
+
             init();
+
             requestAnimationFrame(animate);
+
         }
 
+
+
         window.addEventListener('resize', () => {
+
             canvas.width = window.innerWidth;
+
             canvas.height = window.innerHeight;
+
             init();
+
         });
+
+
 
         window.addEventListener('wheel', (e) => {
+
             e.preventDefault();
+
             const zoomSpeed = 0.001;
+
             const zoomAmount = e.deltaY * -zoomSpeed;
+
             const minScale = 0.5;
+
             const maxScale = 2.0;
+
             globalScale = Math.max(minScale, Math.min(maxScale, globalScale + zoomAmount));
+
         }, { passive: false });
 
+
+
         canvas.addEventListener('mousedown', (e) => {
+
             isDragging = true;
+
             lastMouseX = e.clientX;
+
             lastMouseY = e.clientY;
+
         });
+
+
 
         window.addEventListener('mousemove', (e) => {
+
             let handledByNode = false;
+
             renderables.forEach(r => {
+
                 if (r instanceof Node) {
+
                     const dist = Math.sqrt((e.clientX - r.screenX)**2 + (e.clientY - r.screenY)**2);
+
                     if (r.isActivated && dist < r.screenRadius * 1.2) {
+
                         r.isHovered = true;
+
                         handledByNode = true;
+
                     } else {
+
                         r.isHovered = false;
+
                     }
+
                 }
+
             });
+
+
 
             if (isDragging) {
+
                 const deltaX = e.clientX - lastMouseX;
+
                 const deltaY = e.clientY - lastMouseY;
+
                 const rotationSpeed = 0.002;
+
                 rotationY += deltaX * rotationSpeed;
+
                 rotationX += deltaY * rotationSpeed;
+
                 lastMouseX = e.clientX;
+
                 lastMouseY = e.clientY;
+
                 const pullX = e.clientX - canvas.width / 2;
+
                 const pullY = e.clientY - canvas.height / 2;
+
                 const pullStrength = 0.15;
+
                 targetTugOffsetX = pullX * pullStrength;
+
                 targetTugOffsetY = pullY * pullStrength;
+
             }
+
+
 
             const figRect = {
+
                 x: (canvas.width / 2 + tugOffsetX) - (centralFigureImage.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigureImage.naturalHeight)/2,
+
                 y: (canvas.height / 2 + (isIntroAnimationDone ? Math.sin(Date.now() / 1500) * 10 : 0) + tugOffsetY) - (canvas.height * 0.4 * currentFigureExtraScale)/2,
+
                 width: centralFigureImage.naturalWidth * (canvas.height * 0.4 * currentFigureExtraScale) / centralFigureImage.naturalHeight,
+
                 height: canvas.height * 0.4 * currentFigureExtraScale
+
             };
+
             
+
             if (!handledByNode && e.clientX > figRect.x && e.clientX < figRect.x + figRect.width &&
+
                 e.clientY > figRect.y && e.clientY < figRect.y + figRect.height) {
+
                 isHoveringFigure = true;
+
                 targetFigureScale = 1.05;
+
             } else {
+
                 isHoveringFigure = false;
+
                 targetFigureScale = 1.0;
+
             }
+
             canvas.style.cursor = isHoveringFigure || handledByNode ? 'pointer' : (isDragging ? 'grabbing' : 'grab');
+
         });
+
+
 
         window.addEventListener('mouseup', () => {
+
             isDragging = false;
+
             targetTugOffsetX = 0;
+
             targetTugOffsetY = 0;
+
         });
+
         
+
         canvas.addEventListener('click', (e) => {
+
             if(isHoveringFigure) {
+
                 isSubMenuOpen = !isSubMenuOpen;
+
                 subMenuItems.forEach(item => item.classList.toggle('visible', isSubMenuOpen));
+
             }
+
             renderables.forEach(r => {
+
                 if (r instanceof Node && r.isHovered) {
+
                      const modal = document.getElementById('serviceModal');
+
                     const modalContent = modal.querySelector('.modal-content');
+
                     const modalTitle = document.getElementById('modalTitle');
+
                     const modalDescription = document.getElementById('modalDescription');
+
                     
+
                     modalTitle.textContent = serviceData[r.serviceKey].title;
+
                     modalDescription.textContent = serviceData[r.serviceKey].full;
 
+
+
                     const gradient = `linear-gradient(45deg, ${r.colors[0]}, ${r.colors[1]})`;
+
                     modalContent.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), ${gradient}`;
+
                     modalContent.style.backgroundClip = 'border-box'; 
+
                     modalContent.style.borderColor = 'transparent';
 
+
+
                     modalTitle.style.background = gradient;
+
                     modalTitle.style.webkitBackgroundClip = 'text';
+
                     modalTitle.style.webkitTextFillColor = 'transparent';
+
                     modalTitle.style.backgroundClip = 'text';
+
                     
+
                     modal.classList.add('active');
+
                 }
+
             });
+
         });
+
+
+
 
 
         const modal = document.getElementById('serviceModal');
+
         const modalClose = document.getElementById('modalClose');
+
         modalClose.addEventListener('click', () => { modal.classList.remove('active'); });
+
         modal.addEventListener('click', (e) => {
+
             if (e.target === modal) { modal.classList.remove('active'); }
+
         });
 
+
+
     </script>
+
 </body>
+
 </html>
+
+
+
