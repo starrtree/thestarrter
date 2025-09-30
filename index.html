@@ -402,16 +402,16 @@
                 }
                 this.children.forEach(child => child.grow());
             }
-            draw(startX, startY) {
+            draw(startX, startY, zoomScale) {
                 const endX = startX + this.currentLength * Math.cos(this.angle);
                 const endY = startY + this.currentLength * Math.sin(this.angle);
                 ctx.beginPath();
                 ctx.moveTo(startX, startY);
                 ctx.lineTo(endX, endY);
-                ctx.lineWidth = this.lineWidth;
+                ctx.lineWidth = this.lineWidth / zoomScale;
                 ctx.strokeStyle = GOLD_COLOR;
                 ctx.stroke();
-                this.children.forEach(child => child.draw(endX, endY));
+                this.children.forEach(child => child.draw(endX, endY, zoomScale));
             }
         }
 
@@ -429,8 +429,12 @@
                     this.branches.push(new Branch(branchOriginX, branchOriginY, angle, 2));
                 }
             }
-            draw(timestamp, dynamicOriginX, dynamicOriginY) {
+            draw(timestamp, dynamicOriginX, dynamicOriginY, zoomScale) {
                 ctx.save();
+                ctx.translate(dynamicOriginX, dynamicOriginY);
+                ctx.scale(zoomScale, zoomScale);
+                ctx.translate(-dynamicOriginX, -dynamicOriginY);
+
                 ctx.shadowColor = GOLD_COLOR;
                 ctx.shadowBlur = 10;
                 this.branches.forEach(branch => { 
@@ -439,10 +443,10 @@
                     ctx.beginPath();
                     ctx.moveTo(dynamicOriginX, dynamicOriginY);
                     ctx.lineTo(branch.originX, branch.originY);
-                    ctx.lineWidth = branch.lineWidth;
+                    ctx.lineWidth = branch.lineWidth / zoomScale;
                     ctx.strokeStyle = GOLD_COLOR;
                     ctx.stroke();
-                    branch.draw(branch.originX, branch.originY); 
+                    branch.draw(branch.originX, branch.originY, zoomScale); 
                 });
                 ctx.restore();
             }
@@ -601,7 +605,7 @@
             // Unified Render Loop
             renderables.forEach(r => {
                 if (r instanceof EnergyWeb && isIntroAnimationDone) {
-                    r.draw(timestamp, dynamicOriginX, dynamicOriginY);
+                    r.draw(timestamp, dynamicOriginX, dynamicOriginY, globalScale);
                 } else if (r instanceof Figure) {
                    r.draw(timestamp, dynamicOriginX, isIntroAnimationDone ? dynamicOriginY : currentFigureY, currentFigureScale, easedProgress, globalScale);
                 } else if (r instanceof Node) {
@@ -769,3 +773,7 @@
     </script>
 </body>
 </html>
+
+
+
+
